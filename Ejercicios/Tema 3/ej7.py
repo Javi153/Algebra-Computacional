@@ -1,6 +1,7 @@
 #Javier Jimenez Arenas
 #Para este problema usamos la representacion por digitos decimales que vimos en clase en la que los digitos mas significativos estan mas a la derecha
 import natural
+import random
 
 def mul2(x):
     acarreo = 0
@@ -60,3 +61,7 @@ def gcd_binario(x: list,y: list) -> list:
         for _ in range(s):
             m = mul2(m)
     return m
+
+x = [0, 0, 0]
+y = [0, 3, 7, 6, -2, 0, 0]
+print(gcd_binario(x, y))
