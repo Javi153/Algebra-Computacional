@@ -5,7 +5,8 @@ def max_gold_rec(l, i, j):
     elif i + 1 == j:
         return max(l[i], l[j])
     else:
-        return max(l[i] + min(max_gold_rec(l, i + 2, j), max_gold_rec(l, i + 1, j - 1)), l[j] + min(max_gold_rec(l, i, j - 2), max_gold_rec(l, i + 1, j - 1)))
+        aux = max_gold_rec(l, i + 1, j - 1)
+        return max(l[i] + min(max_gold_rec(l, i + 2, j), aux), l[j] + min(max_gold_rec(l, i, j - 2), aux))
 
 def max_gold(l):
     return max_gold_rec(l, 0, len(l) - 1)
