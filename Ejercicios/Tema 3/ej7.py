@@ -1,126 +1,62 @@
 #Javier Jimenez Arenas
-
-#Funciones implementadas por el profesor
-def remover_ceros(a):             # a = lista de digitos decimales
-    n = len(a)
-    while n >= 1 and a[n-1] == 0:
-        n -= 1
-    del a[n:]
-
-def sumar(a, b):             # a,b son listas de digitos "reducidas"
-    n = len(a)
-    m = len(b)
-    if n < m:                # nos aseguramos que a sea el mas largo
-        b, a = a, b
-        n, m = m, n
-    c = [0] * (n+1)          # reservamos espacio suficiente para la suma
-    x = 0                    # x es el acarreo, que inicialmente es 0
-    i = 0
-    while i < m:             # i=0,1,...,m-1
-        x = a[i] + b[i] + x
-        c[i] = x % 10
-        x //= 10
-        i += 1
-    while i < n:             # i=m,m+1,...,n-1
-        x = a[i] + x
-        c[i] = x % 10
-        x //= 10
-        i += 1
-    c[n] = x                 # guardamos el ultimo acarreo
-    remover_ceros(c)         # eliminamos los ceros a la izquierda
-    return c
-
-def comparar(a, b):             # a,b son listas de digitos "reducidas"
-    n = len(a)
-    m = len(b)
-    # si a y b son de distintas longitudes, la comparacion es inmediata,
-    # ya que la representacion que usamos no tiene ceros a la izquierda
-    if n > m:
-        return 1
-    if n < m:
-        return -1
-    # buscamos el menor indice n a partir del cual a y b coinciden
-    while n >= 1 and a[n-1] == b[n-1]:
-        n -= 1
-    if n == 0:
-        return 0
-    elif a[n-1] > b[n-1]:
-        return 1
-    else:
-        return -1
-
-def restar(a, b):            # a,b son listas de digitos "reducidas"
-    n = len(a)
-    m = len(b)
-    # si se nos asegura que la funcion es llamada con a >= b, las
-    # siguientes dos lineas son innecesarias
-    if n < m:
-        return
-    c = [0] * n              # crear c = lista de n ceros
-    x = 0                    # inicializar el acarreo x a cero
-    i = 0
-    while i < m:             # i=0,1,...,m-1
-        x = a[i] - b[i] + x
-        c[i] = x % 10
-        x //= 10
-        i += 1
-    while i < n:             # i=m,m+1,...,n-1
-        x = a[i] + x
-        c[i] = x % 10
-        x //= 10
-        i += 1
-    # al igual que dijimos al principio, las siguientes dos lineas
-    # son innecesarias si a >= b.
-    if x != 0:
-        return
-    remover_ceros(c)
-    return c
-
-#Funciones implementadas por Javier Jimenez Arenas
+#Para este problema usamos la representacion por digitos decimales que vimos en clase en la que los digitos mas significativos estan mas a la derecha
+import natural
 
 def mul2(x):
     acarreo = 0
-    for i in range(len(x)):
-        x[i] = 2 * x[i] + acarreo
-        if x[i] >= 10:
+    for i in range(len(x)): #Recorremos los digitos del manos al mas significativo
+        x[i] = 2 * x[i] + acarreo #Multiplicamos el digito por 2 y sumamos el acarreo que haya, que al principio sera 0
+        if x[i] >= 10: #Si al multiplicar el digito pasara a valer mas de 10 le restamos 10 y sumamos 1 al acarreo. Como maximo tendremos 2 * 9 + 1 = 19 por tanto el acarreo nunca valdra mas de 1
             x[i] -= 10
             acarreo = 1
-        else:
+        else: #En caso contrario el acarreo sera 0
             acarreo = 0
-    if acarreo > 0:
-        x.append(1)
-    return x
+    if acarreo > 0: #Al salir del bucle añadimos un digito mas si hubiese acarreo en el simbolo mas significativo
+        x.append(acarreo)
+    natural.remover_ceros(x) #Si hubiese 0 en x los eliminamos
+    return x 
 
 def div2(x):
     acarreo = 0
-    for i in range(len(x) - 1, -1, -1):
-        aux = x[i] + acarreo
-        x[i] = aux // 2
-        if aux % 2 == 0:
+    for i in range(len(x) - 1, -1, -1): #Recorremos los digitos del mas al menos significativo
+        aux = x[i] + acarreo #Sumamos al digito el acarreo derivado de la division del digito inmediatamente mas significativo que el
+        x[i] = aux // 2 #Dividimos el digito entre 2, quedandonos con su floor
+        if aux % 2 == 0: #Si la division no fuese exacta tendra resto 1, pues es la unica posibilidad dividiendo por 2, asi que al proximo digito le sumamos 10
             acarreo = 0
         else:
             acarreo = 10
-    remover_ceros(x)
+    natural.remover_ceros(x) #Eliminamos los posibles 0
     return x
 
-def gcd_binario(x,y):
-    xespar = not x or x[0] % 2 == 0
-    yespar = not y or y[0] % 2 == 0
-    if not x:
+def gcd_binario(x: list,y: list) -> list:
+    natural.remover_ceros(x) #Eliminamos los 0 redundantes
+    if x: #Suponiendo que la lista no es vacia, truncamos el signo del digito mas significativo, aunque en general podriamos suponer que los numeros dados son positivos
+        x[len(x) - 1] = abs(x[len(x) - 1])
+    natural.remover_ceros(y) #Eliminamos los 0 redundantes
+    if y: #Suponiendo que la lista no es vacia, truncamos el signo del digito mas significativo, aunque en general podriamos suponer que los numeros dados son positivos
+        y[len(y) - 1] = abs(y[len(y) - 1])
+    s = 0 #Este sera el acumulador de potencias de 2, el numero de veces que llamaremos a la funcion mul2
+    while x and y: #Mientras x e y no sean 0
+        xespar = not x or x[0]&1 == 0 #Seran pares si son listas vacias o si el ultimo digito es par
+        yespar = not y or y[0]&1 == 0
+        if xespar and yespar:
+            s += 1                #Si ambos son pares el gcd es 2 * el gcd de dividir ambos entre 2
+            x = div2(x)
+            y = div2(y)
+        elif xespar:              #Si solo uno es par lo dividimos entre 2 y el gcd no cambia
+            x = div2(x)
+        elif yespar:
+            y = div2(y)
+        elif natural.comparar(x, y) == 1: #Si ninguno es par, restamos al mas grande el mas pequeño y calculamos el gcd del resultado con el mas pequeño
+            x = div2(natural.restar(x, y))
+        else:
+            y = div2(natural.restar(y, x))
+    if not x:                    # caso base: gcd(0,y)=y
         m = y
-    elif not y:
+        for _ in range(s): #Multiplicamos por 2 tantas veces como lo indique el acumulador s
+            m = mul2(m)
+    else:                         # caso base: gcd(x,0)=x
         m = x
-    elif xespar and yespar:
-        m = mul2(gcd_binario(div2(x), div2(y)))
-    elif xespar:
-        m = gcd_binario(div2(x), y)
-    elif yespar:
-        m = gcd_binario(x, div2(y))
-    elif comparar(x, y) == 1:
-        m = gcd_binario(y, div2(restar(x, y)))
-    else:
-        m = gcd_binario(x, div2(restar(y, x)))
+        for _ in range(s):
+            m = mul2(m)
     return m
-
-
-print(gcd_binario([2,5,4,3,2,5], [2,5,6,8]))
