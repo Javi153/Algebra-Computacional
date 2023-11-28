@@ -1,0 +1,833 @@
+\documentclass[a4paper, 11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=2cm]{geometry}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{lightgrey}{rgb}{0.95,0.95,0.95}
+
+\renewcommand*{\lstlistingname}{Programa}
+
+\lstset{
+   language=Python,
+   basicstyle=\ttfamily\small,
+   keywordstyle=\color{deepblue}\bfseries\itshape,
+   commentstyle=\color{deepgreen}\itshape,
+   stringstyle=\color{deepred},
+   backgroundcolor=\color{lightgrey},
+   morekeywords={as,assert,nonlocal,with,yield},
+   showstringspaces=false,
+   numbers=left,
+   rulecolor=\color{black},
+   captionpos=b,
+   frame=leftline,
+   literate=
+   {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+   {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+   {à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+   {À}{{\`A}}1 {È}{{\`E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+   {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+   {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+   {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+   {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+   {ã}{{\~a}}1 {ẽ}{{\~e}}1 {ĩ}{{\~i}}1 {õ}{{\~o}}1 {ũ}{{\~u}}1
+   {Ã}{{\~A}}1 {Ẽ}{{\~E}}1 {Ĩ}{{\~I}}1 {Õ}{{\~O}}1 {Ũ}{{\~U}}1
+   {œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+   {ű}{{\H{u}}}1 {Ű}{{\H{U}}}1 {ő}{{\H{o}}}1 {Ő}{{\H{O}}}1
+   {ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {Ø}{{\O}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+   {€}{{\euro}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
+   {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1 {¡}{{!`}}1 
+}
+
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\UU}{\mathcal{U}}
+
+\newcounter{numerodetema}
+\newcommand\tema[1]{{\eject\stepcounter{numerodetema}\bf Álgebra Computacional
+2023/24 \hfill Tema~\#\arabic{numerodetema}}\par\smallskip\hrule\bigskip\par
+\begin{center}{\Large\bf #1}\end{center}}
+
+\theoremstyle{plain}
+\newtheorem{teor}{Teorema}[numerodetema]
+\newtheorem{coro}[teor]{Corolario}
+\newtheorem{lema}[teor]{Lema}
+\newtheorem{prop}[teor]{Proposición}
+\theoremstyle{definition}
+\newtheorem{defi}[teor]{Definición}
+\newtheorem{prob}{Problema}[numerodetema]
+
+\newcommand\myatop[2]{\genfrac{}{}{0pt}{}{#1}{#2}}
+
+\parindent=0cm
+
+\begin{document}
+
+\tema{El lenguaje de programación Python3}
+
+Python3 es un lenguaje de programación con las siguientes características:
+\begin{itemize}
+\item Imperativo: los programas son sucesiones de instrucciones.
+\item Interpretado: se necesita de un programa especial en la máquina que lea
+las instrucciones y las ejecute.
+\item Modular: los programas se pueden dividir en varios ficheros (librerías y
+programa principal).
+\item Valores por referencia: las variables contienen la dirección de memoría
+del objeto al que están asignadas.
+\item Tipado dinámico: las variables pueden cambiar el tipo de objeto al que
+son asignadas durante la ejecución del programa.
+\item Orientado a objetos: los programas operan sobre objetos que incluyen
+datos y algoritmos.
+\end{itemize}
+
+\bigskip
+
+A continuación describiremos un pequeño subconjunto de Python3 que nos servirá
+para implementar casi todos los algoritmos de la asignatura.
+
+\bigskip
+
+Las instrucciones más simples de Python3 son las siguientes:
+
+\bigskip
+
+\begin{lstlisting}[language=Python,morekeywords={as,assert,nonlocal,with,yield}]
+# asignación simple
+variable = expresion
+
+# asignación multiple
+var_1, var_2, ..., var_n = expr_1, expr_2, ..., expr_n 
+
+# condicional
+if expresion:
+    bloque_de_instrucciones
+elif expresion:
+    bloque_de_instrucciones
+elif expresion:
+    bloque_de_instrucciones
+else:
+    bloque_de_instrucciones
+
+# bucle
+while expresion:
+     bloque_de_instrucciones
+else:
+     bloque_de_instrucciones
+
+# no hacer nada
+pass
+
+# salir de un bucle while sin ejecutar el "else"
+break
+
+# recomenzar el bucle while
+continue
+\end{lstlisting}
+
+\bigskip
+
+Los bloques de instrucciones mencionados arriba corresponden con una o más
+instrucciones puestas una tras otra con la misma indentación. Las variables
+son simplemente cualquier secuencia de letras del alfabeto (mayúsculas
+y minúsculas), dígitos y la barra baja, pero que no empiecen con un dígito y
+que no correspondan con ninguna palabra reservada del lenguaje. Las expresiones
+pueden involucrar constantes, variables, las operaciones \texttt{+}, \texttt{-},
+\texttt{*}, \texttt{/}, \texttt{//}, \texttt{\%}, \texttt{**}, \texttt{\&},
+\texttt{|}, \texttt{\^}, \texttt{\~}, \texttt{<}, \texttt{>}, \texttt{==},
+\texttt{!=}, \texttt{<=}, \texttt{>=}, \texttt{<<}, \texttt{>>}, \texttt{and},
+\texttt{or}, \texttt{not}, e invocaciones a funciones previamente definidas. El
+uso de paréntesis en expresiones es necesario para cambiar el orden de
+precedencia predeterminado de las operaciones. En una asignación múltiple,
+todas las expresiones son calculadas (de izquierda a derecha) y luego asignadas
+a las correspondientes variables.
+
+\bigskip
+
+Python3 puede operar, entre otros, con valores booleanos (verdadero y falso),
+números enteros de cuaquier cantidad de dígitos, cadenas de caracteres unicode
+de cualquier longitud, números reales y complejos de punto flotante de precisión
+doble (64 bits), listas, tuplas, conjuntos y diccionarios.
+
+\bigskip
+
+Los valores booleanos son representados con las palabras \texttt{True} y
+\texttt{False}. Las operaciones lógicas entre valores booleanos son \texttt{and},
+\texttt{or} y \texttt{not}. En un bucle \texttt{while}, la expresión (ver linea 18)
+debe dar como resultado \texttt{True} para que el siguiente bloque de instrucciones
+sea ejecutado y \texttt{False} para que el bucle termine. Por supuesto, cada
+vez que el bloque es ejecutado, la expresión condicional vuelve a evaluarse
+para determinar si se debe volver a entrar o si se debe salir del bucle. Antes de
+salir del bucle, el bloque de instrucciones dentro del \texttt{else} es ejecutado
+(si es que está presente), a menos que se haya salido a través de un \texttt{break}.
+De forma similar, las condicionales determinan cuál es el único bloque de
+instrucciones que debe ejecutarse en función de los resultados de las expresiones
+booleanas (ver lineas 8, 10, 12, 14). La parte \texttt{else:} puede omitirse y puede
+haber cualquier cantidad de \texttt{elif expresion:} como se necesite (o incluso no
+haber ninguna de estas).
+
+\bigskip
+
+Los enteros se escriben en notación decimal (por ejemplo, \texttt{9489284792794}
+es un entero válido). También es posible escribir enteros en base 2, 8 o 16,
+precediendo los dígitos con \texttt{0b}, \texttt{0o} o \texttt{0x}, respectivamente.
+Da lo mismo escribir \texttt{1234}, \texttt{0b10011010010}, \texttt{0o2322} o
+\texttt{0x4d2}. Las operaciones entre enteros son: suma \texttt{+}, resta
+\texttt{-}, multiplicación \texttt{*}, división real \texttt{/}, división
+entera \texttt{//}, resto de la división \texttt{\%}, potenciación \texttt{**},
+and bit-a-bit \texttt{\&}, or bit-a-bit \texttt{|}, xor bit-a-bit \texttt{\^}, not
+bit-a-bit \texttt{\~}, comparaciones de igual \texttt{==} y de diferente
+\texttt{!=}, comparaciones de tipo desigualdad \texttt{<}, \texttt{>},
+\texttt{<=}, \texttt{>=} y desplazamiento de bits hacia la izquierda \texttt{>>}
+y hacia la derecha \texttt{<<}. Las comparaciones dan como resultado un valor
+booleano. La división real da como resultado un número de punto flotante y la
+división entera da el cociente redondeado hacia abajo. La potenciación da un
+entero si el exponente es positivo o cero y un número de punto flotante si el
+exponente es negativo. El desplazamiento de bits hacia la derecha es equivalente
+a multiplicar por una potencia de dos, es decir, \texttt{1 << 20} da como
+resultado $2^{20}$. El desplazamiento hacia la izquierda corresponde con la
+división entera por una potencia de dos, es decir, \texttt{83 >> 3} dará como
+resultado $10$, ya que $\lfloor83/2^3\rfloor=10$.
+
+\bigskip
+
+{\bf Detalle técnico:} Los números enteros tienen asociado una secuencia infinita
+(hacia la izquierda) de bits llamada \emph{complemento a dos}. Para un $n\geq0$,
+esta secuencia es simplemente la escritura binaria de $n$ con ceros a la izquierda.
+Por ejemplo, el entero \texttt{n = 0b10111 = 23}, tiene asociada la sucesión
+$\cdots 000010111$.
+El conjunto de estas sucesiones infinitas de bits forma un anillo conmutativo
+$\ZZ_2$ (con la suma y multiplicación calculadas como habitualmente, es decir,
+teniendo en cuenta los acarreos). Podría pensarse que $\ZZ_2$ es el conjunto de
+enteros con \emph{infinitos dígitos binarios}. En este anillo, el inverso aditivo
+de $\cdots 000001$ es la sucesión $\cdots 111111$ de todos unos, ya que al hacer
+la adición (con acarreo) se obtendrían todos ceros. Un entero $n<0$ tendrá entonces
+asociada la secuencia que es el inverso aditivo de la de $-n$ en el anillo $\ZZ_2$.
+Por ejemplo, el \texttt{n = -0b10100 = -20} tendrá asociada la secuencia
+$\cdots 1111101100$. La aplicación $\ZZ\to\ZZ_2$ que manda cada entero a su
+representación en complemento a dos, es un morfismo de anillos.
+
+\bigskip
+
+Las operaciones bit-a-bit \texttt{\&}, \texttt{|}, \texttt{\^} y \texttt{\~}
+trabajan con la representación complemento a dos de los argumentos. Por ejemplo,
+si \texttt{a = 0b10011 = 19} y \texttt{b = 0b10101 = 21}, entonces los resultados
+de las operaciones bit-a-bit serían \texttt{a\&b = 0b10001 = 17},
+\texttt{a|b = 0b10111 = 23}, \texttt{a\^{}b = 0b110 = 6} y
+\texttt{\~{}a = -0b10100 = -20}.
+
+\bigskip
+
+\lstinputlisting[language=Python,morekeywords={as,assert,nonlocal,with,yield},
+caption={\texttt{factorial\_10000.py}},label={prog1}]{factorial_10000.py}
+
+\bigskip
+
+La linea 5 del programa~\ref{prog1} puede abreviarse escribiendo \texttt{m *= n}
+y de forma similar, la linea 6 puede escribirse \texttt{n += 1}. Estas formas son
+muy frecuentes en Python3. La estructura del bucle while de las lineas 4--6 es
+también muy común: la variable \texttt{n} actua como un \textit{contador} que va
+incrementandose en una unidad en cada iteración. El efecto es que la linea 5
+se ejecuta $10000$ veces, cada vez con un valor de $n=1,2,\ldots,10000$ diferente.
+La variable $m$ actua como un \textit{acumulador}, en el que se van multiplicando
+todos los valores de $n$. La función predefinida \texttt{print(x)} imprime el
+objeto \texttt{x} en el dispositivo de salida (usualmente el monitor del
+ordenador).
+
+\bigskip
+
+A partir de la versión 3.10.7 del intérprete de Python3, las conversiones entre enteros
+y cadenas de caracteres están limitadas a un máximo de $4300$ dígitos decimales. Para que
+el programa anterior funcione, se invocar al intérprete con la variable de entorno
+\texttt{PYTHONINTMAXSTRDIGITS=0}. Si no hicieramos esto, nos daría un error en la
+linea 7, ya que $10000!$ tiene $35660$ dígitos.
+
+\bigskip
+
+\lstinputlisting[language=Python,caption={\texttt{suma\_digitos\_3pow10000.py}},
+label={prog2}]{suma_digitos_3pow10000.py}
+
+\bigskip
+
+Las lineas 5 y 6 del programa~\ref{prog2} podrían escribirse como
+\texttt{s += a \% 10} y \texttt{a //= 10}.
+
+\bigskip
+
+Los valores reales de punto flotante también se escriben en notación decimal,
+pero deben incluir el punto en algún lugar para diferenciarlos de los enteros
+(por ejemplo, \texttt{12.9287492} o \texttt{1.0}). También pueden estar escritos
+en notación científica, usando la letra \texttt{e} para separar la mantisa del
+exponente (por ejemplo, \texttt{3.234e-29} significa $3.234\cdot 10^{-29}$).
+Para indicar la parte imaginaria de un número complejo se añade una letra
+\texttt{j} al final del número sin dejar ningún espacio (por ejemplo,
+\texttt{3.0+5e-3j} significa $3+5\cdot 10^{-3}i$). Exceptuando las operaciones
+de desplazamiento de bits, todas las demás operaciones pueden trabajar con
+valores reales y complejos.
+
+\bigskip
+
+\lstinputlisting[language=Python,caption={\texttt{pi\_div\_4\_aprox.py}},
+label={prog3}]{pi_div_4_aprox.py}
+
+\bigskip
+
+Las cadenas de caracteres se escriben entre comillas simples o dobles (por
+ejemplo, \texttt{'hola a todos!', "300 euros"}). Las únicas operaciones
+permitidas con cadenas de caracteres son la concatenación \texttt{+}, la
+repetición \texttt{*} y las comparaciones \texttt{==, !=, <, >, <=, >=}.
+Se puede obtener la subcadena los caracteres entre los indices $i$ y
+$j$ de una cadena dada, usando el operador \texttt{[i:j]}.
+El primer caracter de una cadena tiene índice $0$ y el operador no incluye
+el caracter con índice $j$ en la subcadena. Por ejemplo, si \texttt{a='python'},
+la operación \texttt{a[1:4]} dará como resultado \texttt{'yth'}. En caso
+de que $i$ no esté explicitamente dado, se entenderá que $i=0$ y de forma
+similar, si $j$ no está dado, se supone que $j$ es la longitud de la cadena.
+Siguiendo con el ejemplo, \texttt{a[:3]} producirá \texttt{'pyt'} y \texttt{a[3:]}
+dará \texttt{'hon'}. Los índices negativos indican una posición empezando desde
+la derecha, es decir, en nuestro ejemplo, tendríamos que \texttt{a[-1]} es
+\texttt{'n'} y \texttt{a[-3:-1]} es \texttt{'ho'}. En el caso de que $i<0$ y $j$
+no esté dado, se entenderá que $j=0$, es decir, \texttt{a[-4:]} es \texttt{'thon'}.
+De forma similar, si $j<0$ pero $i$ no está dado, $i$ será implícitamente
+el negativo de la longitud de la cadena.
+
+\bigskip
+
+La función predefinida
+\texttt{len(s)} devuelve la longitud de la cadena \texttt{s} y la función
+predefinida \texttt{str(x)} convierte un objeto \texttt{x} a una cadena de
+caracteres.
+
+\bigskip
+
+\lstinputlisting[language=Python,morekeywords={as,assert,nonlocal,with,yield},
+caption={\texttt{bin\_3pow10000.py}},label={prog4}]{bin_3pow10000.py}
+
+\bigskip
+
+Las funciones predefinidas \texttt{bool(x)}, \texttt{int(x)} y \texttt{float(x)}
+convierten, si es posible, un objeto \texttt{x} a un booleano, entero y a un
+número real de punto flotante, respectivamente. Usualmente son invocadas con
+\texttt{x} una cadena de caracteres y por lo tanto son, en ese sentido,
+operaciones inversas a \texttt{str(x)}.
+
+\bigskip
+
+Las funciones \texttt{bin(x)}, \texttt{oct(x)} y \texttt{hex(x)} toman un valor
+entero \texttt{x} y devuelven su representación binaria, octal y hexadecimal, 
+respectivamente (con el correspondiente prefijo \texttt{0b}, \texttt{0o} y
+\texttt{0x}). Por ejemplo, la parte 1 del programa~\ref{prog4} (lineas 1--6)
+podría sustituirse por \texttt{s = bin(3**10000)[2:]}.
+
+\bigskip
+
+Cada caracter está internamente representado en Python3 por su valor Unicode.
+La función \texttt{chr(n)} toma un entero \texttt{n} y devuelve una cadena de
+caracteres de longitud 1 con el correspondiente caracter Unicode. La función
+\texttt{ord(s)} hace exactamente lo opuesto, es decir, toma un cadena de un
+solo caracter y devuelve el valor numérico Unicode de ese caracter. Por ejemplo,
+\texttt{chr(241)} devuelve \texttt{'ñ'} y \texttt{ord('@')} da \texttt{64}.
+
+\bigskip
+
+En Python3 es posible definir funciones nuevas con el comando \texttt{def}, tal
+como se muestra a continuación:
+
+\begin{lstlisting}
+def nombre_de_la_funcion(arg1, arg2, ...):
+    bloque_de_instrucciones
+\end{lstlisting}
+
+\bigskip
+
+La instrucción \texttt{return expr1, expr2, ...} se utiliza dentro de la definición
+de una función para indicar cuál es el resultado de la misma.
+
+\bigskip
+
+El siguiente ejemplo, muestra una función que determina si un entero $n\geq 2$ dado
+es primo o no (la función devuelve un valor booleano) y luego la invoca en un bucle
+while para listar todos los primos entre $2$ y $100$.
+
+\lstinputlisting[language=Python,morekeywords={as,assert,nonlocal,with,yield},
+caption={\texttt{primos\_hasta\_100.py}},label={prog5}]{primos_hasta_100.py}
+
+\bigskip
+
+Puede verse que la función \texttt{es\_primo}(n) en el programa~\ref{prog3} es
+bastante ineficiente. Puede mejorarse bastante si en lugar de buscar
+divisores entre $2$ y $n-1$ se los busca entre $2$ y $\lfloor\sqrt{n}\rfloor$.
+Eso podría conseguirse simplemente cambiando la linea 4 por
+\texttt{while d*d <= n:}
+Otra posible mejora sería determinar primero si $n$ es par o no y luego
+sólo comprobar los \texttt{d} impares.
+
+\bigskip
+
+Las variables \texttt{n} y \texttt{d} de las lineas 2--8 son \textit{locales}
+a la función \texttt{es\_primo}. Podrían cambiarse todas las \texttt{n} en las
+lineas 10--14 por \texttt{d} y el programa funcionaría correctamente. La
+asignación \texttt{d = 2} que sucede dentro de la función (linea 3) no afectaría
+a la variable \texttt{d} externa.
+
+\bigskip
+
+Hasta ahora hemos visto que Python3 permite operar con valores booleanos, enteros
+de precisión arbitraria, números reales y complejos de doble precisión (punto
+flotante) y cadenas de caracteres.
+
+\bigskip
+
+Python3 también permite operar con colecciones de objetos, en forma de listas,
+tuplas, conjuntos y diccionarios.
+
+\bigskip
+
+Una \emph{tupla} es simplemente una secuencia finita de objetos, indicados
+entre paréntesis. Por ejemplo, \texttt{(2,4,True,(5,1.3,"hola!"))} es
+una tupla de longitud $4$, formada por dos enteros, un booleano y una
+tupla. La tupla de longitud $0$ se representa \texttt{()} y las de
+longitud $1$ con una coma adicional luego de la única entrada, como
+por ejemplo \texttt{("álgebra",)}, para que no haya ambigüedad con el
+uso habitual de los paréntesis en expresiones. Al igual que con las
+cadenas de caracteres, las operaciones permitidas son la concatenación
+\texttt{+}, la repetición \texttt{*}, las comparaciones \texttt{==},
+\texttt{!=}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, y la
+extracción de una subtupla usando \texttt{[i:j]}. Hay una nueva operación
+\texttt{in} que permite determinar si un objeto \texttt{x} está o no
+en una tupla. Por ejemplo, si \texttt{t = (1,3,"aaa")}, la expresión
+\texttt{2 in t} dará como resultado \texttt{False}.
+
+\bigskip
+
+Las \emph{listas} son también secuencias finitas de objetos, pero en este
+caso, se usan corchetes en lugar de paréntesis para indicarlas. Por
+ejemplo, \texttt{[2,False,(3,5.9),"hola!",[-2,8]]} es una lista de
+longitud~$5$. La lista vacía se representa \texttt{[]} y las de un
+sólo elemento no necesitan la coma adicional, como por ejemplo
+\texttt{[2021]}. Acepta las mismas operaciones que las tuplas. Es
+posible convertir una tupla \texttt{x} en una lista, con la función
+predefinida \texttt{list(x)}, y convertir una lista \texttt{x} en una
+tupla con la función predefinida \texttt{tuple(x)}.
+
+\bigskip
+
+\lstinputlisting[language=Python,caption={\texttt{curva\_eliptica\_mod13.py}},
+label={prog6}]{curva_eliptica_mod13.py}
+
+\bigskip
+
+El programa~\ref{prog6} imprime una lista de 6 tuplas de dos coordenadas
+cada una. El programa también funcionaría si se cambia la linea 3 por
+\texttt{l = ()} y la linea 9 por \texttt{l += ((x,y),)}, pero en este
+caso imprimiría una tupla de 6 tuplas.
+
+\bigskip
+
+{\bf Detalle técnico:} Con lo que hemos visto hasta ahora, parecería que
+las listas y las tuplas son completamente intercambiables. Sin embargo,
+hay una sutil diferencia entre ambas: es posible modificar, agregar o
+borrar elementos dentro una lista, pero no de una tupla. Se dice que las
+listas son objetos mutables y las tuplas inmutables. Para conseguir
+modificar un objeto dentro de una lista \texttt{l}, basta con asignarle
+un valor. Por ejemplo, \texttt{l[4] = "xxx"} cambia la componente de
+índice~$4$ de \texttt{l} por la cadena de caracteres \texttt{"xxx"}.
+Esta acción no crea una nueva lista, sino que modifica la ya existente.
+Para borrar la componente de índice \texttt{i} de una lista \texttt{l} se usa
+la instrucción \texttt{del l[i]}. Para reemplazar parte de una lista
+\texttt{l1} por otra \texttt{l2}, se usa la asignación
+\texttt{l1[i:j] = l2}. Para añadir un objeto \texttt{x} al final de una
+lista \texttt{l} se utiliza \texttt{list.append(l, x)}, o equivalentemente,
+\texttt{l.append(x)}.
+
+\bigskip
+
+\lstinputlisting[language=Python,morekeywords={as,assert,nonlocal,with,yield},
+caption={\texttt{ordenar\_lista.py}},label={prog7}]{ordenar_lista.py}
+
+\bigskip
+
+Los \emph{diccionarios} son secuencias de objetos indexadas por otros objetos.
+Estos se representan usando llaves, del siguiente modo:
+\texttt{\{indice:objeto, indice:objeto, \ldots\}}. Por ejemplo, la asignación
+\texttt{d = \{"hola":"hello", "perro":"dog", "pi":3.14\}} define un diccionario
+\texttt{d} de tres objetos indexados por cadenas de caracteres. El valor de
+\texttt{d["hola"]} es \texttt{"hello"} y el de \texttt{d["pi"]} es \texttt{3.14}.
+El diccionario vacío se representa \texttt{\{\}}. Los diccionarios son
+objetos mutables, por lo que es posible cambiar, borrar o añadir traducciones.
+En el ejemplo, si se hace \texttt{d["gato"] = "cat"} se estaría añadiendo
+una nueva traducción, si se hace \texttt{d["pi"] = 3.141592} se modificaría
+la traducción existente, y por último, si se hace \texttt{del d["hola"]} se
+borraría esa traducción del diccionario. Las únicas operaciones permitidas
+son \texttt{in}, \texttt{==} y \texttt{!=}.
+
+\bigskip
+
+\lstinputlisting[language=Python,caption={\texttt{codigo\_morse.py}},
+label={prog8}]{codigo_morse.py}
+
+\bigskip
+
+{\bf Detalle técnico:} Debido a la forma en la que los diccionarios están
+implementados (por razones de eficiencia), los índices deben ser objetos
+\emph{hashables}. Si bien es difícil definir exactamente en este punto
+cuales son esos, podríamos decir que cualquier objeto booleano, entero,
+real, complejo y cadena de caracteres es hashable, como así también las
+tuplas cuyas componentes sean hashables. Los diccionarios y las listas
+no son hashables.
+
+\bigskip
+
+Los \emph{conjuntos} son colecciones de objetos distintos (que deben ser
+hashables) y se indican usando llaves \texttt{\{obj1, obj2, obj3, \ldots\}}.
+Las repeticiones se consideran como un único elemento. Las operaciones entre
+conjuntos son: pertenencia \texttt{in}, unión \texttt{|}, intersección
+\texttt{\&}, diferencia \texttt{-} y diferencia simétrica \texttt{\^}.
+La función predefinida \texttt{set(x)} convierte un objeto \texttt{x} en
+un conjunto. Si se la invoca con una lista o una tupla, devuelve el
+conjunto de sus elementos sin repetir.  El conjunto vacío no puede ser
+indicado con~\texttt{\{\}}, ya que eso representa el diccionario vacío, por
+lo que se debe utilizar \texttt{set()}. Los conjuntos son objetos mutables,
+y por lo tanto, se les puede añadir o quitar elementos. Para añadir un
+objeto \texttt{x} a un conjunto \texttt{s} se usa \texttt{s.add(x)} y
+para quitarlo se usa \texttt{s.discard(x)}. Los conjuntos no son hashables.
+
+\bigskip
+
+\lstinputlisting[language=Python,morekeywords={as,assert,nonlocal,with,yield},
+caption={\texttt{ultimos\_digitos\_3\_pow\_i.py}},
+label={prog9}]{ultimos_digitos_3_pow_i.py}
+
+\bigskip
+
+En el programa~\ref{prog9}, es importante usar conjuntos y no tuplas o listas,
+ya que no nos interesan los elementos repetidos. La linea 10 podría cambiarse
+por \texttt{nums.add((3 ** i) \% 100)} para evitar crear un nuevo conjunto en
+cada iteración.
+
+\bigskip
+
+{\bf Detalle técnico:} El equivalente inmutable (y hashable) de los conjuntos son
+los conjuntos congelados, que se indican \texttt{frozenset(\{obj1, obj2, \ldots\})}.
+Permiten las mismas operaciones que los conjuntos, excepto añadir y quitar
+elementos. El conjunto congelado vacío se indica \texttt{frozenset()}.
+
+\bigskip
+
+En el programa~\ref{prog9} podríamos cambiar la linea 7 por
+\texttt{nums = frozenset()} y la linea 10 por
+\texttt{nums |= frozenset(\{(3 ** i) \% 100\})} ya que no estamos utilizando
+la mutabilidad en ninguna parte.
+Cada vez que se ejecuta la linea 10, se crearía un nuevo conjunto congelado.
+Lógicamente, en este caso no podríamos cambiar la linea 10 por
+\texttt{nums.add((3 ** i) \% 100)}.
+
+\bigskip
+
+Hasta ahora hemos trabajado con bucles while, que permiten repetir un
+bloque de instrucciones mientras una cierta condición se mantenga verdadera.
+Python3 también tiene los bucles \texttt{for}:
+
+\begin{lstlisting}
+for variable in objeto_iterable:
+    bloque_de_instrucciones
+else:
+    bloque_de_instrucciones
+\end{lstlisting}
+
+que repiten el bloque de instrucciones con la variable recorriendo todos los
+valores en el objeto iterable (cadena de caracteres, lista, tupla, conjunto,
+conjunto congelado o diccionario). Para el caso de diccionarios, se pueden
+usar dos variables:
+
+\begin{lstlisting}
+for var_1, var_2 in diccionario:
+    bloque_de_instrucciones
+else:
+    bloque_de_instrucciones
+\end{lstlisting}
+
+la primera para el índice y la segunda para el valor. Si se usa una sola, el
+bucle sólo recorre los índices. {\bf Cuidado:} No se debe modificar el objeto
+iterable usado en el bucle dentro del bloque de instrucciones.
+
+\bigskip
+
+Los bucles \texttt{for} pueden opcionalmente incluir un \texttt{else}. En ese
+caso, una vez que el bucle acaba normalmente (es decir, no con un \texttt{break}),
+se ejecutan las instrucciones dentro del \texttt{else}.
+
+\bigskip
+
+Python3 tiene un objeto iterable \texttt{range(n)} (que se puede usar en un
+bucle \texttt{for}) que representa todos los números entre $0$ y $n-1$. Es
+decir, \texttt{for i in range(10):} repite el siguiente bloque de instrucciones
+para $i=0,1,\ldots,9$. Si se escribe \texttt{range(n,m)}, se obtienen los
+números entre \texttt{n} y \texttt{m-1}.
+
+\bigskip
+
+\lstinputlisting[language=Python,morekeywords={as,assert,nonlocal,with,yield},
+caption={\texttt{goldbach\_10000.py}},label={prog10}]{goldbach_10000.py}
+
+\bigskip
+
+Otro aspecto importante de Python3 es la modularidad. Un programa grande puede
+ser dividido en varios ficheros (librerías) para una mejor organización. Desde
+el programa principal, el comando \texttt{import nombre\_de\_la\_libreria}, ejecuta
+el programa \texttt{nombre\_de\_la\_libreria.py} en una nueva instancia del
+intérprete, y da acceso a todas las variables (o funciones) definidas en del mismo
+a través de la notación \texttt{nombre\_de\_la\_libreria.nombre\_de\_la\_variable}.
+En el caso de que la librería tenga un nombre que colisione con otro ya definido en
+el programa que la quiere importar, o que simplemente se quiera usar otro nombre,
+se puede utilizar el comando \texttt{import nombre\_de\_la\_libreria as otro\_nombre}.
+Si se hace esto, se accederá a las variable (o funciones) a través de la notación
+\texttt{otro\_nombre.nombre\_de\_la\_variable}.
+
+\bigskip
+
+\lstinputlisting[language=Python,morekeywords={as,assert,nonlocal,with,yield},
+caption={\texttt{libreria\_ejemplo.py}},label={prog11}]{libreria_ejemplo.py}
+
+\bigskip
+
+\lstinputlisting[language=Python,morekeywords={as,assert,nonlocal,with,yield},
+caption={\texttt{programa\_ejemplo.py}},label={prog12}]{programa_ejemplo.py}
+
+\bigskip
+
+Se considera buen estilo de programación el separar tareas en pequeñas funciones
+y el dividir un programa en varias librerías bien estructuradas.
+
+\bigskip
+
+La función \texttt{raiz\_cuadrada} definida en \texttt{libreria\_ejemplo.py} es
+muy eficiente. Se puede comprobar que el bucle while se ejecutará aproximadamente
+$\log_2(x)$ veces. Sin embargo, la función \texttt{es\_primo} no es nada eficiente,
+ya que el bucle principal se ejecutará aproximadamente $\sqrt{n}$ veces, lo que
+puede ser muy grande.
+
+\bigskip
+
+\begin{prob}
+Si escribimos todos los números naturales menores que $10$ que son múltiplos de
+$3$ o de $5$, obtenemos $3$, $5$, $6$ y $9$. La suma de esos números es $23$.
+Calcular la suma de todos los múltiplos de $3$ o $5$ menores que $1000$.
+\end{prob}
+
+\begin{prob}\label{prob:fibo}
+Cada término de la sucesión de Fibonacci es la suma de los dos anteriores. Los
+dos primeros términos son $0$ y $1$, así que la sucesión empieza:
+\[
+   0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, \ldots
+\]
+Calcular la suma de los números pares menores que cuatro millones que aparecen
+entre los términos de la sucesión de Fibonacci.
+\end{prob}
+
+\begin{prob}
+Si se ordenan los primos en orden creciente se obtiene $2,3,5,7,11,13,\ldots$.
+¿Cuál es el primo que ocupa el lugar $10001$ de la sucesión?
+\end{prob}
+
+\begin{prob}
+La conjetura de Collatz afirma que si empieza por cualquier número entero
+$n\geq 1$ y se lo va cambiando iterativamente de acuerdo con la regla
+\[
+\begin{aligned}
+   n\;\text{par}\;&\longrightarrow n/2 \\
+   n\;\text{impar}\;&\longrightarrow 3n+1
+\end{aligned}
+\]
+se llega siempre a $1$. Verificar que la conjetura es cierta para todo $n$ menor
+que $1000000$ y determinar cuál de esos valores de $n$ produce la cadena más
+larga hasta llegar al $1$.
+\end{prob}
+
+\begin{prob}
+La constante de Champernowne es el número irracional que se obtiene al concatenar
+todos los números naturales, del siguiente modo:
+\[
+   0.12345678910{\underline{1}}1121314151617181920212223\ldots
+\]
+Se puede ver que el dígito en la posición número $12$ despues del punto
+decimal es $1$ (subrayado en la linea de arriba). Sea $d_n$ el dígito que
+ocupa el lugar $n$-ésimo. Calcular
+\[
+   d_1\cdot d_{10}\cdot d_{100}\cdot d_{1000}\cdot d_{10000}\cdot d_{100000}
+   \cdot d_{1000000}.
+\]
+\end{prob}
+
+\begin{prob}
+Implementar la función \texttt{cambiar5por3(n)} que tome un número entero $n$ y
+devuelva el entero que se obtiene al cambiar cada dígito $5$ que aparece
+en la representación decimal de $n$ por un $3$. Por ejemplo, la llamada 
+\texttt{cambiar5por3(-5152)} debe devolver \texttt{-3132}.
+\end{prob}
+
+\begin{prob}
+Implementar la función \texttt{dia\_de\_la\_semana(d,m,a)} que devuelva el
+día de la semana correspondiente a día $d$ del mes $m$ del año $a$. Se puede
+asumir que la fecha con la que se invoca a la función es válida y pertenece
+al calendario gregoriano. La función deberá devolver $0$ para lunes, $1$ para
+martes, etc.
+\end{prob}
+
+\begin{prob}[Atbash, Rot13, Caesar]
+El criptosistema \emph{atbash} consiste en cifrar una cadena de caracteres, que solo
+contiene letras del alfabeto inglés, cambiando cada letra por la que está en
+la posición opuesta en el alfabeto, es decir, la \texttt{"a"} cambia por la
+\texttt{"z"}, la \texttt{"b"} por la \texttt{"y"}, etc. Implementar la función
+\texttt{atbash(w)} que tome una cadena de caracteres~\texttt{w} y la devuelva
+cifrada. Otra variante de este criptosistema, llamada \emph{rot13}, cambia cada letra
+por la que está $13$ posiciones mas adelante en el alfabeto (entendido cíclicamente).
+Implementarlo en la función~\texttt{rot13(w)}. Más generalmente, podría
+cambiarse el $13$ por un número $0\leq k\leq 25$ (la clave secreta) y así
+tener un poco mas de seguridad (cifrado \emph{caesar}). Implementar esta variación
+en la función \texttt{caesar(w,k)}. ¿Cuál es la función de descifrado?
+\end{prob}
+
+\begin{prob}[Vigenère]
+En el siglo XVI, Blaise de Vigenère propuso una mejora sustancial sobre el
+cifrado caesar, que recién pudo ser quebrado $300$ años después, lo que le
+dió la reputación de \emph{le chiffrage indéchiffrable}. La idea consistía
+en utilizar una palabra \texttt{s} razonablemente larga como clave secreta y
+cifrar el mensaje \texttt{m} cambiando cada \texttt{m[i]} por el caracter que está
+en el alfabeto en la posición que se obtiene de sumar las posiciones que ocupan
+\texttt{m[i]} y \texttt{s[i]}, entendiendose que la \texttt{"a"} está en la
+posición~$0$, la \texttt{"b"} en la $1$, etc. Como habitualmente la cadena
+\texttt{m} será mucho mas larga que la cadena \texttt{s}, a esta última se la
+repetirá tantas veces como sea necesario para alcanzar la longitud de \texttt{m}.
+Implementar este cifrado en la función \texttt{enc\_vigenere(m,s)}. Por ejemplo,
+la llamada \texttt{enc\_vigenere("attackatdawn", "lemon")} debería devolver la
+cadena \texttt{"lxfopvefrnhr"}. Implementar también la correspondiente función
+de descifrado~\texttt{dec\_vigenere(c,s)}.
+\end{prob}
+
+\begin{prob}
+Si se ordenan todas la palabras de $4$ o menos letras (elegidas del alfabeto
+inglés de $26$ letras) con el orden del diccionario, la primera sería
+la~\texttt{"a"}, la segunda la~\texttt{"aa"}, y la última, en la posición
+$26+26^2+26^3+26^4$, la~\texttt{"zzzz"}. ¿Cuál es la palabra en la posición
+$138096$? Más generalmente, implementar la función \texttt{number2word(p,n)}
+que, dados $1\leq p\leq 26+26^2+\cdots+26^n$, determine la palabra en la
+posición $p$ de entre todas la de $n$ o menos letras. Implementar también la
+operación inversa, es decir, la función \texttt{word2number(w,n)} que tome
+una cadena de caracteres $w$ de longitud entre $1$ y $n$ formada solo por
+letras del alfabeto inglés y devuelva su posición entre todas las de
+hasta $n$ letras.
+\end{prob}
+
+\begin{prob}
+Demostrar que si $k\geq 1$ y $(k+1)!>10^m$, entonces
+\[
+   0\leq 10^me-\sum_{i=0}^k\left\lfloor\frac{10^m}{i!}\right\rfloor<k,
+\]
+
+y utilizar eso para implementar la función \texttt{digitos\_de\_e(n)}
+que imprima el valor de $e$ con $n\geq 0$ dígitos decimales correctos.
+Por ejemplo, \texttt{digitos\_de\_e(4)} deberá imprimir $2.7182$.
+
+\smallskip
+
+{\bf Sugerencia:} Para una implementación eficiente, demostrar que
+\texttt{a//(b*c) == (a//b)//c} para todos $a,b,c\in\NN$.
+\end{prob}
+
+\begin{prob}
+Implementar la función \texttt{factorizar(n)} que toma un número entero positivo
+\texttt{n} y devuelve una lista de pares ordenados de los primos que aparecen en
+la factorización de \texttt{n} (en orden creciente) y sus correspondientes
+multiplicidades. Por ejemplo, el resultado de \texttt{factorizar(1400)} debe ser
+\texttt{[(2,3),(5,2),(7,1)]}.
+\end{prob}
+
+\begin{prob}\label{prob-eval-poly}
+Un polinomio $f=a_0+a_1x+\cdots+a_dx^d\in\CC[x]$ puede ser representado en
+Python3 por la lista de coeficientes \texttt{[a\_0,a\_1,...,a\_d]}. Implementar
+la función \texttt{evaluar\_polinomio(f,t)} que tome una lista \texttt{f}
+representando a un polinomio y un número complejo \texttt{t} y que devuelva
+$f(t)$. Por ejemplo, \texttt{evaluar\_polinomio([-1.0,1-2j,2.5],1j)}
+debería devolver (aproximadamente) \texttt{-1.5+1j}.
+\end{prob}
+
+\begin{prob}
+Hay ocho posibles monedas de euro: las de 1, 2, 5, 10, 20 y 50 céntimos y las
+de 1 y 2 euros. ¿Cuántas posibilidades hay para la cantidad total de dinero
+que puede tener una persona con exactamente 12 monedas de euro? ¿Cuál es la
+menor cantidad de céntimos (a partir de 12) que no pueden pagarse con exactamente
+12 monedas de euro?
+\end{prob}
+
+\begin{prob}
+Se tienen inicialmente $100$ cajas (colocadas en círculo) con una bola en cada una.
+En cada turno, se extraen todas las bolas de una caja y se las coloca, una a
+una, en las siguientes cajas avanzando en sentido horario. El siguiente turno
+comienza en la caja donde se colocó la última bola del paso anterior. ¿En qué
+turno se repite la configuración inicial por primera vez?
+\end{prob}
+
+\begin{prob}
+La sucesión de Golomb $g(1),g(2),g(3),\ldots$ es la única sucesión no decreciente
+de números naturales en la que todo $n\geq 1$ aparece exactamente $g(n)$ veces.
+Es fácil ver que los primeros términos de la sucesión son $1,\,2,\,2,\,3,\,3,\,4,
+\,4,\,4,\,5,\,5,\,5,\,6,\,6,\,6,\,6,\ldots$ Calcular $g(1000000)$.
+\end{prob}
+
+\begin{prob}
+La criba de Eratostenes es un método para obtener todos los números primos
+entre $2$ y $n$. Se empieza con la lista de todos los números $2,3,\ldots,n$ e
+iterativamente se van marcando los números como primos o compuestos siguiendo
+la siguiente regla: en cada iteración, se marca como primo al menor número de
+la lista que aún no ha sido marcado (ni primo ni compuesto) y se marcan como
+compuestos a todos sus múltiplos. Por ejemplo, en la primera iteración,
+quedará marcado el $2$ como primo y los números $4,6,8,\ldots$ como compuestos.
+En la segunda iteración, se marcará al $3$ como primo y a $3,6,9,\ldots$ como
+compuestos. En la siguiente iteración, el menor número aún no marcado es el $5$,
+que será marcado como primo. Implementar ese algoritmo como la función
+\texttt{eratostenes(n)} que toma un $n\geq 2$ y devuelve una lista $l$ de
+longitud $n+1$ tal que $l[k]=1$ si $k$ es primo y $l[k]=0$ si $k=0$, 
+$k=1$ o $k$ es compuesto.
+\end{prob}
+
+\begin{prob}[Conway's game of life]
+El ``juego de la vida'' es un \emph{autómata celular} diseñado por el matemático
+británico John Horton Conway en 1970 que simula la evolución de unos individuos
+ficticios que habitan una mundo rectangular dividido en $m\times n$ celdas. Cada
+celda puede tener como máximo un individuo. La evolución del juego está
+completamente determinada por el estado inicial de acuerdo con las siguientes
+reglas:
+\begin{itemize}
+\item Un individuo seguirá vivo en la siguiente generación si y solo si está
+rodeado por dos o tres individuos. Cuando un individuo muere, la celda que
+ocupaba queda vacía.
+\item Las celdas vacías rodeadas por exactamente tres individuos tendrán un
+individuo en la siguiente generación y en los demás casos seguirán vacías.
+\end{itemize}
+Representaremos al estado del juego por medio de una lista $l$ de $m$ listas de
+$n$ ceros y unos. Los ceros indican las celdas vacías y los unos las ocupadas por
+individuos. Implementar la función \texttt{conway(l,m,n,k)} que devuelva el
+estado correspondiente a la generación $k$-ésima partiendo de $l$.
+\end{prob}
+
+\begin{prob}
+Dada una lista de enteros $l$ de longitud $n\geq 1$, encontrar $0\leq i<j<n$
+tales que \texttt{abs(sum(l[i:j]))} sea máxima. Implementar el algoritmo en la
+función \texttt{max\_abs\_sum\_sublst(l)} que devuelve el par \texttt{(i,j)}.
+¿Cómo se podría maximizar \texttt{sum(l[i:j])}?
+
+\medskip
+
+{\bf Sugerencia:} Calcular la lista de las sumas parciales de $l$.
+\end{prob}
+
+\end{document}

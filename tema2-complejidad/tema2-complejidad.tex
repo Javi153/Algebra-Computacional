@@ -1,0 +1,466 @@
+\documentclass[a4paper, 11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=2cm]{geometry}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{lightgrey}{rgb}{0.95,0.95,0.95}
+
+\renewcommand*{\lstlistingname}{Programa}
+
+\lstset{
+   language=Python,
+   basicstyle=\ttfamily\small,
+   keywordstyle=\color{deepblue}\bfseries\itshape,
+   commentstyle=\color{deepgreen}\itshape,
+   stringstyle=\color{deepred},
+   backgroundcolor=\color{lightgrey},
+   morekeywords={as,assert,nonlocal,with,yield},
+   showstringspaces=false,
+   numbers=left,
+   rulecolor=\color{black},
+   captionpos=b,
+   frame=leftline,
+   literate=
+   {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+   {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+   {à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+   {À}{{\`A}}1 {È}{{\`E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+   {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+   {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+   {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+   {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+   {ã}{{\~a}}1 {ẽ}{{\~e}}1 {ĩ}{{\~i}}1 {õ}{{\~o}}1 {ũ}{{\~u}}1
+   {Ã}{{\~A}}1 {Ẽ}{{\~E}}1 {Ĩ}{{\~I}}1 {Õ}{{\~O}}1 {Ũ}{{\~U}}1
+   {œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+   {ű}{{\H{u}}}1 {Ű}{{\H{U}}}1 {ő}{{\H{o}}}1 {Ő}{{\H{O}}}1
+   {ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {Ø}{{\O}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+   {€}{{\euro}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
+   {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1 {¡}{{!`}}1 
+}
+
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\UU}{\mathcal{U}}
+
+\newcounter{numerodetema}
+\newcommand\tema[1]{{\eject\stepcounter{numerodetema}\bf Álgebra Computacional
+2023/24 \hfill Tema~\#\arabic{numerodetema}}\par\smallskip\hrule\bigskip\par
+\begin{center}{\Large\bf #1}\end{center}}
+
+\theoremstyle{plain}
+\newtheorem{teor}{Teorema}[numerodetema]
+\newtheorem{coro}[teor]{Corolario}
+\newtheorem{lema}[teor]{Lema}
+\newtheorem{prop}[teor]{Proposición}
+\theoremstyle{definition}
+\newtheorem{defi}[teor]{Definición}
+\newtheorem{prob}{Problema}[numerodetema]
+
+\newcommand\myatop[2]{\genfrac{}{}{0pt}{}{#1}{#2}}
+
+\parindent=0cm
+
+\begin{document}
+
+\setcounter{numerodetema}{1}
+\tema{Técnicas de programación y complejidad de algoritmos}
+
+Hay varias formas de definir el costo computacional de un algoritmo. Una
+primera forma es simplemente contar la cantidad de operaciones que el
+algoritmo hace durante su ejecución. A eso se lo llama la \textit{complejidad
+aritmética} del algoritmo. Esta complejidad es independiente de la máquina
+en la que el algoritmo se ejecute y da una cota inferior del verdadero tiempo
+de cálculo. Es claro que las operaciones aritméticas (suma, resta, multiplicación,
+división) de enteros son mas costosas para números largos que para números
+cortos. La complejidad aritmética no tiene en cuenta esas diferencias. Lo
+mismo sucede con la concatenación de listas y tuplas, la unión e intersección
+de conjuntos, etc. Es por eso que se introduce tambień la noción de
+\textit{complejidad binaria}, que cuenta la cantidad de operaciones que el
+procesador de la máquina hará durante la ejecución del algoritmo. El
+problema con esta definición es que se necesita especificar el tipo de
+máquina se utilizará y también cómo las instrucciones de Python3 se
+traducen en operaciones de la máquina.
+
+\bigskip
+
+Empecemos con un ejemplo simple de algoritmo que dado un entero $x$
+calcula su raíz cuadrada $\lfloor\sqrt{x}\rfloor$ redondeada hacia abajo.
+Es decir, busca el mayor entero $y$ tal $y^2\geq x$.
+
+\bigskip
+
+\lstinputlisting[language=Python,linerange={1-5},firstnumber=1,
+caption={\texttt{raizcuad.py} (lineas 1--5)},
+label={prog20}]{raizcuad.py}
+
+\bigskip
+
+Es fácil ver que este algoritmo es correcto para cualquier entrada $x\geq 0$.
+Es importante indicar en la especificación del algoritmo que este nunca debe
+ser invocado con un argumento negativo.
+
+\bigskip
+
+¿Cuánto tiempo, medido en número de operaciones aritméticas entre enteros
+y comparaciones, tarda el algoritmo \texttt{raiz\_cuadrada\_muy\_lenta} en
+terminar? Un conteo rápido nos dice que la asignación de la linea~2 se ejecuta
+una sola vez, la multiplicación y comparación de la linea~3 se ejecutan
+$x-\lfloor\sqrt{x}\rfloor+1$ veces y la resta de la linea~4 se ejecuta
+$x-\lfloor\sqrt{x}\rfloor$ veces. En total, el algoritmo realiza
+$3(x-\lfloor\sqrt{x}\rfloor+1)$ operaciones. Esto es la complejidad aritmética
+del algoritmo.
+
+\bigskip
+
+Sean $f,g:\NN\to\RR_{>0}$ y supongamos que $g$ es creciente. Decimos que
+\[
+   f\in O(g)\;\Longleftrightarrow\;
+     \exists\,c,x_0>0\;:\;
+     \forall\,x>x_0\;:\;
+     f(x)\leq cg(x)\;\Longleftrightarrow\;
+     \limsup_{x\to\infty}\frac{f(x)}{g(x)}<\infty
+\]
+
+\bigskip
+
+Por ejemplo, se puede decir que la complejidad aritmética de
+\texttt{raiz\_cuadrada(x)} es $O(x)$. Lógicamente, también se podría decir
+que es $O(x^2)$, pero es mejor la anterior, ya que da una cota mas
+estricta.
+
+\bigskip
+
+En análisis de algoritmos es mas común expresar la complejidad de los
+algoritmos en función del \emph{tamaño} de la entrada y no en función
+del valor numérico de la entrada. Si consideramos que el número $x$
+está expresado en base $10$, su tamaño será aproximadamente
+$n=size(x)\approx\log_{10}|x|$, por lo que la complejidad aritmética de
+\texttt{raiz\_cuadrada(x)} sería $\approx 3\cdot 10^n\in O(10^n)$,
+es decir, exponencial en el tamaño de la entrada.
+
+\bigskip
+
+Se puede conseguir una mejora importante en el algoritmo anterior si
+en lugar de empezar a explorar los posibles $y$ empezando en $x$ lo
+hicieramos empezando en $1$. De ese modo conseguiremos la solución en
+$O(\sqrt{x})$ pasos, es decir, con complejidad aritmética $O(10^{n/2})$.
+
+\bigskip
+
+\lstinputlisting[language=Python,linerange={7-11},firstnumber=7,
+caption={\texttt{raizcuad.py} (lineas 7--11)},label={prog21}]
+{raizcuad.py}
+
+\bigskip
+
+Una idea bastante mejor es hacer una \emph{busqueda binaria} de $y$ en el
+intervalo $[0,x]$, aprovechando que los cuadrados perfectos están
+ordenados de forma creciente $0^2<1^2<2^2<3^2<\cdots<x^2$.
+
+\bigskip
+
+\lstinputlisting[language=Python,linerange={13-22},firstnumber=13,
+caption={\texttt{raizcuad.py} (lineas 13--22)},
+label={prog22}]{raizcuad.py}
+
+\bigskip
+
+En cada iteración, la longitud del intervalo $[izq,der)$ se reduce a
+la mitad, por lo que tendremos $\approx\log_2(x)=\log_{10}(x)/\log_{10}(2)$
+pasos hasta salir del bucle. Esto nos dice que la complejidad aritmética
+del algoritmo \texttt{raiz\_cuadrada\_super\_rapida(x)} es $O(n)$, donde
+$n=size(x)\approx\log_{10}(x)$.
+
+\bigskip
+
+Ahora veamos como calcular el máximo común divisor de dos enteros $(x,y)\neq
+(0,0)$ dados. La idea más simple es explorar todos los enteros en
+$[1,\max\{|x|,|y|\}]$, de mayor a menor y detenerse cuando aparezca el primero
+que divida a $x$ y a $y$.
+
+\bigskip
+
+\lstinputlisting[language=Python,linerange={1-5},firstnumber=1,
+caption={\texttt{gcds.py} (lineas 1--5)},label={prog27}]
+{gcds.py}
+
+\bigskip
+
+Por supuesto, ya hemos visto que ese tipo de búsqueda son extremadamente
+ineficientes con respecto a la cantidad de operaciones que deben realizarse.
+De hecho, si llamamos $n=size(x)+size(y)$, resulta que la complejidad 
+aritmética de \texttt{gcd\_lento(x,y)} es $O(10^n)$.
+
+\bigskip
+
+Para conseguir una complejidad razonable, necesitamos un algoritmo
+que reduzca la cantidad de dígitos en cada iteración. Una posibilidad
+es la siguiente: si $x$ e $y$ son ambos pares, entonces claramente
+$\gcd(x,y)=2\cdot\gcd(x/2,y/2)$. Por otra parte, si $x$ es par pero $y$ es
+impar, tenemos que $\gcd(x,y)=\gcd(x/2,y)$. De forma similar, si $x$
+es impar e $y$ es par, tenemos $\gcd(x,y)=\gcd(x,y/2)$. Estas identidades
+nos permiten dividir por $2$ a al menos uno de los datos de entrada.
+Hasta ahí todo bien, pero ¿qué hacer si $x$ e $y$ son impares?
+Un posible truco es que $\gcd(x,y)=\gcd(x,y-x)$ y ahora, como $y-x$ es
+par, en el siguiente paso tendremos $\gcd(x,y)=\gcd(x,(y-x)/2)$. Para
+cualquier $x,y\geq 0$ (no ambos nulos) tenemos la siguiente fórmula
+para calcular $\gcd(x,y)$:
+
+\[
+   \gcd(x,y)=\left\{\begin{array}{ll}
+      y                          & \text{si}\;x=0\\
+      x                          & \text{si}\;y=0\\
+      2\gcd(\frac{x}2,\frac{y}2) & \text{si}\;x,y\;\text{son ambos pares} \\
+      \gcd(\frac{x}2,y)          & \text{si}\;x\;\text{es par}, y\;\text{es impar} \\
+      \gcd(x,\frac{y}2)          & \text{si}\;x\;\text{es impar}, y\;\text{es par} \\
+      \gcd(\frac{x-y}2,y)        & \text{si}\;x,y\;\text{son ambos impares con}\;x>y\\
+      \gcd(x,\frac{y-x}2)        & \text{en caso contrario}
+   \end{array}\right.
+\]
+
+\bigskip
+
+\lstinputlisting[language=Python,linerange={7-26},firstnumber=7,
+caption={\texttt{gcds.py} (lineas 7--26)},
+label={prog28}]{gcds.py}
+
+\bigskip
+
+Es fácil comprobar que \texttt{gcd\_binario(x,y)} tiene una complejidad aritmética
+$O(n)$, donde $n=size(x)+size(y)$. En cada paso, uno de los números pierde (al menos)
+$1$ dígito binario de longitud.
+
+\bigskip
+
+Un algoritmo que se invoca a si mismo se llama recursivo. La idea es que en
+cada llamada el problema se va reduciendo a un caso cada vez mas fácil, hasta
+en algún momento dar con los \emph{casos base} que se resuelven directamente.
+
+\bigskip
+
+Consideremos ahora la sucesión de Fibonacci, definida recursivamente del
+siguiente modo:
+\[
+\begin{aligned}
+   f_0 &= 0, \\
+   f_1 &= 1, \\
+   f_n &= f_{n-1} + f_{n-2}\quad\text{si}\;n\geq 2.
+\end{aligned}
+\]
+Esa definición puede traducirse directamente en la función \texttt{fibonacci\_rec(n)}
+que calcula $f_n$.
+
+\bigskip
+
+\lstinputlisting[language=Python,linerange={1-7},firstnumber=1,
+caption={\texttt{fibo.py} (lineas 1--7)},
+label={prog29}]{fibo.py}
+
+\bigskip
+
+El problema con la implementación anterior es que es extremadamente lenta. Se
+puede ver que la llamada \texttt{fibonacci\_rec(30)} se convierte en las llamadas
+\texttt{fibonacci\_rec(29)} y \texttt{fibonacci\_rec(28)}, y cada una de esas de
+convierte en dos llamadas y así siguiendo. Al final, se terminarán haciendo
+$f_{30}=1346269$ llamadas a los casos base \texttt{fibonacci\_rec(0)} y
+\texttt{fibonacci\_rec(1)}.
+
+\bigskip
+
+Es claro que el problema anterior proviene de que la función \texttt{fibonacci\_rec(n)}
+no tiene ``memoria''. Eso se puede solucionar de dos formas diferentes. La primera
+de estas, que se llama \emph{memoización}, consiste en almacenar los resultados
+de cada invocación en memoria (usualmente en un diccionario o una lista), y
+cada vez que se recibe una llamada, se busca primero en memoria si el resultado
+ya está disponible o si debe ser calculado.
+
+\bigskip
+
+\lstinputlisting[language=Python,linerange={9-22},firstnumber=9,
+caption={\texttt{fibo.py} (lineas 9--22)},
+label={prog30}]{fibo.py}
+
+\bigskip
+
+La función \texttt{fibonacci\_mem(n)} permite calcular el valor de $f_n$ en
+solamente $O(n)$ operaciones aritméticas. La única limitación de esta versión
+estará determinada por la máxima profundidad recursiva que el intérprete de
+Python3 permita (típicamente alrededor de 1000). Por ejemplo, la llamada 
+\texttt{fibonacci\_mem(10000)} dará error en casi todas las implementaciones
+modernas de Python3.
+
+\bigskip
+
+{\bf Detalle técnico:} Si bien no es recomendado, se puede cambiar la máxima
+profundidad de la recursión con el comando \texttt{sys.setrecursionlimit(n)}
+de la librería estándar \texttt{sys}.
+
+\bigskip
+
+Otra posible técnica, es eliminar la recursión completamente y reescribir el
+algoritmo de forma iterativa. Para esto, es importante identificar la cadena
+de dependencias entre los subproblemas, e ir resolviendolos en orden creciente
+de dificultad. Los resultados de las iteraciones se van almacenando en una
+estructura de datos, de forma similar a la memoización. En cada iteración
+solo se necesitan valores ya calculados previamente.
+
+\bigskip
+
+\lstinputlisting[language=Python,linerange={24-30},firstnumber=24,
+caption={\texttt{fibo.py} (lineas 24--30)},
+label={prog31}]{fibo.py}
+
+\bigskip
+
+Esta implementación también tiene complejidad aritmética $O(n)$, pero no
+recuerda los valores para invocaciones siguientes. Por otra parte, como no
+utiliza recursión, no hay otro límite más que la capacidad de la memoria en
+donde se almacenan los resultados previos. Ambas técnicas se llaman
+\emph{programación dinámica} y es perfectamente posible usarlas de
+forma combinada.
+
+\bigskip
+
+Volvamos a analizar la implementación de \texttt{gcd\_binario(x,y)}. Se puede
+ver que cada uno de los \texttt{return} termina con el caso base o con una
+llamada a la misma función. Esto puede traer problemas con el límite que impone
+Python3 sobre la profundidad de la recursión. Sin embargo, es posible en este
+caso utilizar un truco llamado \emph{tail recursion} que elimina completamente
+la recursión. La idea es reducirse primero al caso base utilizando un bucle
+while y luego devolver lo que corresponda según el caso al que se llegue.
+
+\bigskip
+
+\lstinputlisting[language=Python,linerange={28-51},firstnumber=28,
+caption={\texttt{gcds.py} (lineas 28--51)},
+label={prog32}]{gcds.py}
+
+\bigskip
+
+Por último, acabamos este tema con una implementación mas fancy (y algo mas
+rápida) del algoritmo \texttt{gcd\_binario\_tail\_rec} que utiliza los operadores
+de manipulación de bits.
+
+\bigskip
+
+\lstinputlisting[language=Python,linerange={53-76},firstnumber=53,
+caption={\texttt{gcds.py} (lineas 53--76)},
+label={prog33}]{gcds.py}
+
+\bigskip
+
+\begin{prob}\label{prob_gcd_binario}
+Demostrar que para cualquier par de enteros
+$(x,y)\neq(0,0)$, existen $a,b\in\ZZ$ tales que $ax+by=\gcd(x,y)$.
+Implementar una función \texttt{gcd\_extendido\_binario(x,y)}, basado
+en la idea de \texttt{gcd\_binario}, que no solo devuelva el máximo
+común divisor, sino que también devuelva $a$ y $b$.
+\end{prob}
+
+\begin{prob}
+El método clásico para calcular el máximo
+común divisor se llama \emph{algoritmo de Euclides} y está basado
+en la identidad $gcd(x,y)=gcd(y,x\bmod y)$, donde $x\bmod y$ es
+el resto de dividir $x$ por $y$. Demostrar que la identidad es
+correcta, e implementar el correspondiente algoritmo recursivo
+\texttt{gcd\_euclides(x,y)} identificando cuáles son los casos
+base. Comparar la complejidad aritmética de este algoritmo con
+\texttt{gcd\_binario(x,y)}. Por último, extender el algoritmo a
+uno que obtenga también $a$ y $b$ como en el problema~\ref{prob_gcd_binario}
+\end{prob}
+
+\begin{prob}
+Implementar una función
+\texttt{es\_suma\_de\_k\_potencias\_n(x,k,n)} que decida si un
+entero $x\geq0$ se puede escribir como $x_1^n+x_2^n+\cdots+x_k^n$ para
+ciertos enteros $x_1,\ldots,x_k\geq 0$. La función debe devolver un
+valor booleano.
+\end{prob}
+
+\begin{prob}
+Considerar el siguiente juego de dos jugadores:
+partiendo de una pila de $n$ piedras, los jugadores van (uno tras
+otro) quitando $1$, $2$, $6$ o $98$ piedras de la pila a su elección, hasta
+que el que quita la última pierde. Implementar un algoritmo recursivo
+\texttt{hay\_estrategia\_ganadora(n)} que determine si, partiendo
+de una pila de $n$ piedras, el jugador que empieza tiene estrategia
+ganadora.
+\end{prob}
+
+\begin{prob}
+Implementar una función \texttt{contar\_palabras(n)}
+que calcule cuántas palabras hay de longitud $n\geq 1$ que utilizan
+solamente las letras $a$ y $b$ y que no tienen tres $a$ consecutivas.
+\end{prob}
+
+\begin{prob}[Egg dropping problem]
+Consideremos un edificio de $n\geq 1$ plantas y $k\geq 1$ huevos ideales con
+la siguiente propiedad: si se deja caer uno de estos huevos desde la planta $m$
+o superior, el huevo se rompe, pero si se lo deja caer desde una planta inferior
+a la $m$, el huevo queda intacto. El valor de $m\in[1,n+1]$ es el mismo para
+todos los huevos. Se pretende determinar el valor exacto de $m$ utilizando los
+$k$ huevos. Si se utiliza la estrategia óptima, ¿cuál es la mínima cantidad de
+veces que debe lanzar el huevo para conseguir esto? Implementar la función
+\texttt{egg\_drop(n,k)} que lo determine. Por ejemplo, si solo disponemos de
+$k=1$ huevo, la única opción es lanzarlo desde todos los pisos, empezando desde
+mas abajo. La primer planta desde la que se rompa, será el valor de $m$ buscado.
+Si no se rompe desde ninguna planta, será $m=n+1$. En el peor caso,
+necesitariamos $n$ lanzamientos, y por lo tanto \texttt{egg\_drop(n,1)} devolverá
+$n$.
+
+\smallskip
+
+{\bf Caso particular de prueba:} \texttt{egg\_drop(100,2)=14}.
+\end{prob}
+
+\begin{prob}
+La forma más simple de multiplicar dos matrices $A$ de $m\times n$ y $B$ de
+$n\times k$ requiere hacer $m\cdot n\cdot k$ multiplicaciones de números
+y una cantidad similar de sumas. Si se tienen varias matrices $A_1,A_2,\ldots,A_k$
+de tamaños $n_0\times n_1, n_1\times n_2,\ldots,n_{k-1}\times n_k$, el producto
+$A_1\cdot A_2\cdots A_k$ puede calcularse de varios modos (por la propiedad asociativa
+del producto de matrices), pero no siempre con el mismo coste computacional. Implementar
+la función \texttt{optimal\_mat\_mul(tam)} que tome una tupla de enteros positivos
+\texttt{tam=(n0, n1, ..., nk)} y determine cuantas operaciones de multiplicación requiere
+la estrategia óptima para multiplicar las matrices.
+
+\smallskip
+
+{\bf Caso particular de prueba:} \texttt{optimal\_mat\_mul((a,b,c,d))} dará el
+mínimo entre $abc+acd$ y $bcd+abd$. El primer valor corresponde con el coste
+de hacer $(A_0\cdot A_1)\cdot A_2$ y el otro el de $A_0\cdot (A_1\cdot A_2)$.
+\end{prob}
+
+\begin{prob}[Pots of Gold]
+En este famoso juego, dos jugadores van alternadamente llevandose pilas de oro,
+con el objetivo de obtener al final la mayor cantidad de oro posible. Las pilas de
+oro están dispuestas en una fila horizontal, y los jugadores en su turno solo pueden
+elegir de entre las dos pilas que están en los extremos de la fila. Digamos que hay
+$k\geq1$ pilas de oro y que las cantidades en gramos de oro de cada pila están en
+una lista \texttt{l = [l1, l2, ..., lk]} de enteros. Escribir una función
+\texttt{max\_gold(l)} que devuelva la máxima cantidad de oro que puede
+llevarse el jugador que empieza si este utiliza la estrategia óptima.
+\end{prob}
+
+\begin{prob}
+Se tiene un tablero de $n\times m$ con un número entero en cada casilla. Una ficha
+se encuentra inicialmente en la casilla de arriba a la izquierda del tablero. En cada
+movimiento se puede desplazar a esta ficha una casilla hacia abajo o una hacia la
+derecha. El objetivo es llegar a la casilla de abajo a la derecha de modo que la suma
+de los números de las casillas visitadas sea mínimo. Implementar una función 
+\texttt{min\_suma\_casillas(n,m,a)} que tome una matriz \texttt{a} (una lista
+de $n$ listas de $m$ enteros) y que devuelva la suma mínima de los números
+visitados en el camino óptimo.
+\end{prob}
+
+\end{document}
