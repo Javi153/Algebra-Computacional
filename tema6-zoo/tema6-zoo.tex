@@ -1,0 +1,492 @@
+\documentclass[a4paper, 11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=2cm]{geometry}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{lightgrey}{rgb}{0.95,0.95,0.95}
+
+\renewcommand*{\lstlistingname}{Programa}
+
+\lstset{
+   language=Python,
+   basicstyle=\ttfamily\small,
+   keywordstyle=\color{deepblue}\bfseries\itshape,
+   commentstyle=\color{deepgreen}\itshape,
+   stringstyle=\color{deepred},
+   backgroundcolor=\color{lightgrey},
+   morekeywords={as,assert,nonlocal,with,yield},
+   showstringspaces=false,
+   numbers=left,
+   rulecolor=\color{black},
+   captionpos=b,
+   frame=leftline,
+   literate=
+   {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+   {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+   {à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+   {À}{{\`A}}1 {È}{{\`E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+   {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+   {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+   {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+   {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+   {ã}{{\~a}}1 {ẽ}{{\~e}}1 {ĩ}{{\~i}}1 {õ}{{\~o}}1 {ũ}{{\~u}}1
+   {Ã}{{\~A}}1 {Ẽ}{{\~E}}1 {Ĩ}{{\~I}}1 {Õ}{{\~O}}1 {Ũ}{{\~U}}1
+   {œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+   {ű}{{\H{u}}}1 {Ű}{{\H{U}}}1 {ő}{{\H{o}}}1 {Ő}{{\H{O}}}1
+   {ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {Ø}{{\O}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+   {€}{{\euro}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
+   {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1 {¡}{{!`}}1 
+}
+
+\newcommand{\Alf}{\mathcal{A}}
+\newcommand{\Lan}{\mathcal{L}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\UU}{\mathcal{U}}
+
+\newcounter{numerodetema}
+\newcommand\tema[1]{{\eject\stepcounter{numerodetema}\bf Álgebra Computacional
+2023/24 \hfill Tema~\#\arabic{numerodetema}}\par\smallskip\hrule\bigskip\par
+\begin{center}{\Large\bf #1}\end{center}}
+
+\theoremstyle{plain}
+\newtheorem{teor}{Teorema}[numerodetema]
+\newtheorem{coro}[teor]{Corolario}
+\newtheorem{lema}[teor]{Lema}
+\newtheorem{prop}[teor]{Proposición}
+\theoremstyle{definition}
+\newtheorem{defi}[teor]{Definición}
+\newtheorem{prob}{Problema}[numerodetema]
+
+\newcommand\myatop[2]{\genfrac{}{}{0pt}{}{#1}{#2}}
+
+\parindent=0cm
+
+\begin{document}
+
+\setcounter{numerodetema}{5}
+\tema{The complexity zoo}
+
+\begin{defi}
+Un alfabeto es un conjunto finito $\Alf$ de al menos dos elementos (llamados símbolos
+o letras). Denotamos $\Alf^n$ al conjunto de palabras de longitud exactamente $n$ y
+$\Alf^*$ al conjunto de todas las palabras de longitud finita (incluyendo la de
+longitud cero). Dada una palabra $w\in\Alf^*$, denotamos por $|w|$ a su longitud.
+\end{defi}
+
+Habitualmente se consideran el alfabeto de los bits $\Alf=\{0,1\}$ o el de los bytes
+$\Alf=\{0,1,\ldots,255\}$. Sin embargo, en estas notas vamos a utilizar el alfabeto
+$\Alf$ de los caracteres UNICODE. Haciendo esto, identificaremos al conjunto $\Alf^*$
+con los objetos de Python3 de tipo \texttt{str}.
+
+\begin{defi}
+Un lenguaje es un subconjunto $\Lan\subseteq\Alf^*$. El conjunto de todos los lenguajes
+es $\mathcal{P}(\Alf^*)$.
+\end{defi}
+
+Por ejemplo, podemos considerar el lenguaje ${\bf Nat}$ de los números naturales
+escritos como cadenas de caracteres UNICODE (y sin ceros redundantes por delante).
+Se tiene que \texttt{"4675"} está en ${\bf Nat}$, pero \texttt{"pepe"} y \texttt{"007"}
+no lo están. Otros lenguajes que nos van a interesar son el de los números primos
+${\bf Prime}$ y el de los números compuestos ${\bf Composite}$.
+
+\begin{defi}\label{defP}
+Un lenguaje $\Lan$ se dice de tipo ${\rm P}$ (resp. ${\rm EXPTIME}$, ${\rm DECIDIBLE}$)
+si es posible implementar la función
+\[
+   \texttt{pertenece\_a\_L(w)}
+\]
+que toma un $w\in\Alf^*$ y devuelve un booleano, tal que para ciertos $C>0$ y $k\geq 1$
+se tiene:
+\begin{enumerate}
+\item Si $w\in\Lan$, la función devuelve \texttt{True}.
+\item Si $w\not\in\Lan$, la función devuelve \texttt{False}.
+\item El tiempo de ejecución del algoritmo es $\leq C(1+|w|)^k$ (resp.
+$\leq 2^{C(1+|w|)^k}$, finito).
+\end{enumerate}
+\end{defi}
+
+\bigskip
+
+Es bastante fácil ver que ${\bf Nat}$ es un lenguaje de tipo $P$. En efecto, el
+siguiente programa satisface la definición anterior con $k=1$.
+
+\begin{lstlisting}[language=Python,morekeywords={as,assert,nonlocal,with,yield}]
+def pertenece_a_Nat(w):
+    n = len(w)
+    if n == 0:
+        return False
+    if w[0] == '0':
+        return False
+    for i in range(n):
+        if not(w[i] in "0123456789"):
+            return False
+    return True
+\end{lstlisting}
+
+\bigskip
+
+También es fácil comprobar que ${\bf Prime}$ es de tipo ${\rm EXPTIME}$. En efecto, el
+siguiente programa comprueba si un $w\in\Alf^*$ está en ${\bf Prime}$ en $O(10^{|w|})$
+operaciones aritméticas con enteros acotados por $10^{|w|}$. Cada una de estas operaciones
+se puede hacer en $O(|w|^2)$ operaciones binarias usando los algoritmos de la escuela.
+
+\begin{lstlisting}[language=Python,morekeywords={as,assert,nonlocal,with,yield}]
+def pertenece_a_Primes(w):
+    if not pertenece_a_Nat(w):
+        return False
+    n = int(w)
+    if n == 1:
+        return False
+    i = 2
+    while i < n:
+        if n % i == 0:
+            return False
+        i += 1
+    return True
+\end{lstlisting}
+
+\bigskip
+
+De la definición de puede deducir inmediatamente que
+\[
+  {\rm P}\subseteq{\rm EXPTIME}\subseteq{\rm DECIDIBLE}\subsetneq\mathcal{P}(\Alf^*).
+\]
+La última inclusión es estrica ya que ${\rm DECIDIBLE}$ es un conjunto numerable (porque
+una cantidad numerable de posibles funciones \texttt{pertenece\_a\_L(w)}) pero
+$\mathcal{P}(\Alf^*)$ es no numerable (por el argumento diagonal de Cantor).
+
+\bigskip
+
+Un teorema reciente, de Agrawal, Kayal y Saxena afirma que ${\bf Prime}$ es de tipo
+${\rm P}$, pero la demostración es bastante compleja. La complejidad del algoritmo
+es $O(|w|^{21/2+\varepsilon})$. Por supuesto, esto implica que \[{\bf Composite}=
+{\bf Prime}^c\cap({\bf Nat}\setminus\{\texttt{"1"}\})\] es también de tipo $P$.
+En general, si $\Lan_1$ y $\Lan_2$ son lenguajes de tipo ${\rm P}$ (resp. ${\rm EXPTIME}$,
+${\rm DECIDIBLE}$), entonces también $\Lan_1\cap\Lan_2$, $\Lan_1\cup\Lan_2$,
+$\Lan_1\setminus\Lan_2$ y $\Lan_1^c$ son de tipo ${\rm P}$ (resp. ${\rm EXPTIME}$,
+${\rm DECIDIBLE}$).
+
+\bigskip
+
+El lenguaje ${\bf Pair}$, también llamado ${\bf Nat^2}$, consiste de las cadenas
+de caracteres \texttt{num1 + "," + num2}, donde \texttt{num1} y \texttt{num2} son
+elementos de ${\bf Nat}$. Por ejemplo, la cadena \texttt{"234,7"}
+es un elemento de ${\bf Pair}$, pero las cadenas \texttt{"pepe,8"}, \texttt{"55"},
+\texttt{"8;3"} y \texttt{"0,0"} no lo son. De forma similar se define el lenguaje
+${\bf Nat^k}$ para cualquier $k\geq 1$. También definimos el lenguaje ${\bf Nat^*}$
+como la unión de todos los ${\bf Nat^k}$ con $k\geq 1$. Por abuso de notación,
+identificaremos ${\bf Nat^k}$ con el conjunto $\NN^k$ y el conjunto ${\bf Nat^*}$
+con el de las sucesión finitas de números naturales.
+
+\bigskip
+
+\begin{prob}
+Demostrar que ${\bf Nat^k}$ es de tipo ${\rm P}$ para cualquier $k\geq 2$, implementado
+en Python3 la función que comprueba la pertenencia.
+\end{prob}
+
+\begin{prob}
+Sea $\Lan\subseteq{\bf Nat}$ el lenguaje de los números naturales que son potencias
+de primos. Demostrar, con ayuda del teorema AKS, que $\Lan$ es de tipo ${\rm P}$.
+\end{prob}
+
+\begin{prob}
+Sea $\Lan\subseteq{\bf Pair}$ el lenguaje de los pares $(g,p)$ tales que $p$ es
+primo, $q=2p+1$ es primo y $g$ es una raíz primitiva módulo $q$. Demostrar, con ayuda
+del teorema AKS, que $\Lan$ es de tipo ${\rm P}$.
+\end{prob}
+
+\begin{prob}
+Sea $\Lan\subseteq{\bf Pair}$ el lenguaje de los pares $(g,p)$ tales que $p$ es
+primo, $p-1$ se factoriza como producto de primos menores que $1000$ y $g$ es una
+raíz primitiva módulo $p$. Demostrar que $\Lan$ es de tipo ${\rm P}$. ¿Como podría
+hacerse esto sin utilizar el teorema AKS?
+\end{prob}
+
+\begin{prob}
+Sea $\Lan\subseteq{\bf Nat^3}$ el lenguaje de las ternas $(a,b,n)$ tales que $n\geq 3$
+es potencia de un primo impar y la ecuación $x^2+ax+b\equiv 0\pmod{n}$ tiene solución.
+Probar que $\Lan$ es de tipo ${\rm P}$.
+\end{prob}
+
+\begin{defi}\label{defNP}
+Un lenguaje $\Lan\subseteq\Alf^*$ se dice de tipo ${\rm NP}$ (resp. ${\rm NEXPTIME}$,
+${\rm NDECIDIBLE}$) si es posible implementar la función
+\[
+   \texttt{es\_certificado\_valido\_L(w,c)}
+\]
+que toma $w,c\in\Alf^*$ y devuelve un booleano, tal que para ciertos $C_1,C_2>0$ y
+$k_1,k_2\geq 1$ se tiene:
+\begin{enumerate}
+\item Si $w\in\Lan$, existe un $c\in\Alf^*$ de longitud $\leq C_1(1+|w|)^{k_1}$ (resp.
+$\leq 2^{C_1(1+|w|)^{k_1}}$, finita), tal que la función devuelve \texttt{True}.
+\item Si $w\not\in\Lan$, para cualquier $c\in\Alf^*$, la función devuelve \texttt{False}.
+\item El tiempo de ejecución del algoritmo es $\leq C_2(1+|w|)^{k_2}$ (resp. $\leq
+2^{C_2(1+|w|)^{k_2}}$, finito).
+\end{enumerate}
+En el apartado 1, se dice que $c$ es un \emph{certificado sucinto} de $w\in\Lan$.
+\end{defi}
+
+\bigskip
+
+Todo lenguaje de tipo ${\rm P}$ es también de tipo ${\rm NP}$, ya que se podría utilizar
+la función \texttt{pertenece\_a\_L(w)} para implementar la función
+\texttt{es\_certificado\_valido\_L(w,c)}, ignorando completamente el argumento~$c$.
+Se dice que ${\rm P}\subseteq {\rm NP}$. Del mismo modo se concluye que
+${\rm EXPTIME}\subseteq {\rm NEXPTIME}$ y ${\rm DECIDIBLE}\subseteq{\rm NDECIDIBLE}$.
+
+\bigskip
+
+Si $\Lan_1$ y $\Lan_2$ son de tipo ${\rm NP}$, entonces $\Lan_1\cup\Lan_2$ y
+$\Lan_1\cap\Lan_2$ son también de tipo ${\rm NP}$. Sin embargo, debido a la asimetría
+entre los apartados 1 y 2 de la definción~\ref{defNP}, no es claro si $\Lan_1^c\in NP$.
+Lo mismo es válido para ${\rm NEXPTIME}$ y ${\rm NDECIDIBLE}$.
+
+\bigskip
+
+\begin{defi}
+Un lenguaje $\Lan\subseteq\Alf^*$ se dice de tipo ${\rm coNP}$ (resp. ${\rm coNEXPTIME}$,
+${\rm coNDEDICIBLE}$) si $\Lan^c$ es de tipo ${\rm NP}$ (resp. ${\rm NEXPTIME}$,
+${\rm DECIDIBLE}$).
+\end{defi}
+
+\bigskip
+
+Veamos que el lenguaje ${\bf Composite}$ es de tipo ${\rm NP}$ sin utilizar el
+teorema AKS. Para cada $w$ compuesto, su certificado sucinto podría ser un par
+$c=(c_1,c_2)\in {\bf Pair}\subseteq\Alf^*$ tal que $w=c_1c_2$ y $c_1,c_2\geq 2$.
+Es fácil construir una función (de complejidad polinomial) que compruebe si dados
+$w,c\in\Alf^*$ se cumplan todas esas condiciones. Evidentemente el certificado
+sucinto garantiza que $w$ es compuesto y ningún primo tiene un certificado válido.
+Por supuesto, esto implica que ${\bf Prime}$ es de tipo ${\rm coNP}$.
+
+\bigskip
+
+Es bastante más dificil demostrar que ${\bf Prime}$ es de tipo ${\rm NP}$ sin utilizar
+el teorema AKS. De hecho, salvo cuestiones de notación, eso es lo que hemos hecho en
+el problema de entregable~\#4. Se certifica la primalidad de $w$ a través del
+teorema de Lucas.
+
+\bigskip
+
+La función \texttt{es\_certificado\_valido\_L(w,c)} puede convertirse fácilmente en
+un test de pertenencia \texttt{pertenece\_a\_L(w)} probando con todos los posbiles
+$c\in\Alf^*$ de longitud $|c|\leq C_1(1+|w|)^{k_1}$, pero lamentablemente eso no
+da un algoritmo polinomial. En el peor caso, es decir cuando $w\not\in\Lan$, se
+tendrán que hacer $|\Alf|^{C_1^2(1+|w|)^{2k_1}}$ comprobaciones. De todos modos,
+este razonamiento prueba que ${\rm NP}\subseteq {\rm EXPTIME}$. También se concluye
+que ${\rm NDECIDIBLE}={\rm DECIDIBLE}\cap {\rm coNDECIDIBLE}$, ya que en las definiciones
+de estas clases de complejidad no se impone ningún límite sobre el tiempo de ejecución
+(salvo que este sea finito).
+
+\bigskip
+
+\begin{prob}
+Sea $\Lan\subseteq{\bf Nat^4}$ el lenguaje de las $4$-tuplas $(a,b,n,c)$ tales que
+la ecuación $x^2+ax+b\equiv 0\pmod{n}$ tiene una solución $0\leq x\leq c$. Demostrar
+que $\Lan$ es de tipo ${\rm NP}$.
+\end{prob}
+
+\begin{prob}
+Sea $\Lan\subseteq{\bf Nat}$ el lenguaje de los números (compuestos) de Carmichael.
+Demostrar que $\Lan\in{\rm NP}\cap{\rm coNP}$. ¿Como puede hacerse sin utilizar el
+teorema AKS?
+\end{prob}
+
+\begin{prob}
+Sea $\Lan\subseteq{\bf Pair}$ el lenguaje de los pares $(g,p)$ tales que $p\geq 2$
+es primo y $g$ es una raíz primitiva módulo $p$. Demostrar que $\Lan\in{\rm NP}
+\cap{\rm coNP}$.
+\end{prob}
+
+\bigskip
+
+\begin{defi}\label{defRP}
+Un lenguaje $\Lan\subseteq\Alf^*$ se dice de tipo ${\rm RP}$ si es posible implementar la
+función
+\[
+   \texttt{es\_certificado\_valido\_L(w,c)}
+\]
+que toma $w,c\in\Alf^*$ y devuelve un booleano, tal que para ciertos $C_1,C_2>0$ y
+$k_1,k_2\geq 1$ se tiene:
+\begin{enumerate}
+\item Si $w\in\Lan$, entonces para al menos la mitad de los $c\in\Alf^*$ de longitud
+$\leq C_1(1+|w|)^{k_1}$, la función devuelve \texttt{True}.
+\item Si $w\not\in\Lan$, para cualquier $c\in\Alf^*$, la función devuelve \texttt{False}.
+\item El tiempo de ejecución del algoritmo es $\leq C_2(1+|w|)^{k_2}$.
+\end{enumerate}
+En el apartado 1, se dice que $c$ es un \emph{certificado sucinto} de $w\in\Lan$.
+\end{defi}
+
+Comparando con la definición de la clase ${\rm NP}$, se puede ver que la única diferencia
+está en que para ${\rm RP}$ se pide que al menos la mitad de los posibles $c\in\Alf^*$
+de longitud $|c|\leq C_1(1+|w|)^{k_1}$ certifiquen la pertenecia, cuando en ${\rm NP}$
+solo se pide la existencia de (al menos) un certificado. Claramente se tiene que
+${\rm P}\subseteq{\rm RP}\subseteq{\rm NP}$.
+
+\bigskip
+
+Si bien es posible transformar la función \texttt{es\_certificado\_valido\_L(W,b)} de un
+lenguaje $\Lan$ de tipo ${\rm RP}$ en un test determinista de pertenencia
+\texttt{pertenece\_a\_L(w)}, probando con todos los posibles $c$ de longitud
+acotada por $C_1(1+|w|)^{k_1}$, esto nos daría un algoritmo exponencial en $|w|$. Una
+idea mejor es implementar un test \emph{probabilista} de pertenencia a $\Lan$. Se eligen
+$c_1,c_2,\ldots,c_k$ uniformememnte al azar y luego se comprueba si algún certificado
+$c_i$ valida a $w$. En caso afirmativo, hemos demostrado que $w\in\Lan$. Por otra parte,
+si $w\in\Lan$, la probabilidad de que ninguno de los $c_i$ valide a $w$ es $\leq (1/2)^k$.
+
+\bigskip
+
+La proposición 5.7 del tema~\#5 demuestra que ${\bf Composite}$ es de tipo ${\rm RP}$. El
+certificado sucinto de la no primalidad de un entero $n\geq 3$ impar es un $a\in\ZZ$
+tal que $\gcd(a,n)=1$ y $a^{(n-1)/2}\not\equiv\left(\frac{a}{n}\right)\pmod{n}$. Al
+menos la mitad de los posibles $a$ entre $1$ y $n$ satisfacen esta condición. El algoritmo
+de pertenecia que se obtiene es el de Solovay-Strassen.
+
+\bigskip
+
+Una definición equivalente de la clase ${\rm RP}$ es la siguiente:
+
+\begin{defi}\label{defRP-2}
+Un lenguaje $\Lan\subseteq{\rm Alf^*}$ se dice de tipo ${\rm RP}$ si es posible implementar
+un algoritmo probabilista
+\[
+   \texttt{pertenece\_a\_L(w)}
+\]
+que toma un $w\in\Alf^*$ y devuelve un booleano, tal que para ciertos $C>0$ y $k\geq 1$
+se tiene:
+\begin{enumerate}
+\item Si $w\in\Lan$, devuelve \texttt{True} con probabilidad $\geq\frac{1}{2}$.
+\item Si $w\not\in\Lan$, siempre devuelve \texttt{False}.
+\item El tiempo de ejecución es $\leq C(1+|w|)^k$.
+\end{enumerate}
+\end{defi}
+
+Ya hemos demostrado que la primer definición implica la segunda. Para ver la otra
+podríamos tomar $C_1=C_2=C$ y $k_1=k_2=k$ y sustituir cada invocación a la función
+random por leer de la cadena $c$. Haciendo esto, mas de la mitad de los posibles~$c$
+validarán un $w$ que pertenezca a $\Lan$.
+
+\bigskip
+
+Debe notarse que si el algoritmo probabilista de la definición~\ref{defRP-2} devuelve
+\texttt{True}, eso demuestra que $w\in\Lan$. Por otra parte, si devuelve \texttt{False},
+eso significa que o bien $w\not\in\Lan$ o que $w\in\Lan$ y tuvimos mala suerte con el
+azar. Repitiendo el test muchas veces se puede reducir la probabilidad de esto último
+tanto como se quiera.
+
+\begin{defi}
+Un lenguaje $\Lan\subseteq\Alf^*$ se dice de tipo ${\rm coRP}$ si $\Lan^c$ es de
+tipo ${\rm RP}$. La intersección ${\rm RP}\cap{\rm coRP}$ se llama ${\rm ZPP}$.
+\end{defi}
+
+\begin{prob}
+Demostrar que en la definción~\ref{defRP-2} se puede reemplazar $\frac12$ por cualquier
+$\varepsilon\in (0,1)$.
+\end{prob}
+
+\begin{prob}
+Demostrar que el lenguaje de los números (compuestos) de Carmichael es ${\rm coRP}$.
+\end{prob}
+
+\begin{prob}\label{prob-vegas}
+Sea $\Lan\subseteq\Alf^*$ un lenguaje. Demostrar que son equivalentes:
+\begin{enumerate}
+\item $\Lan\in{\rm ZPP}$.
+\item Se puede implementar la función \texttt{pertenece\_a\_L(w)} con un algoritmo
+probabilista, que toma un $w\in\Alf^*$ y devuelve un booleano o \texttt{"no lo se"},
+de modo que:
+\begin{itemize}
+\item Si devuelve \texttt{True}, entonces $w\in\Lan$.
+\item Si devuelve \texttt{False}, entonces $w\not\in\Lan$.
+\item La probabilidad de que devuelve \texttt{"no lo se"} es $\leq \frac12$.
+\item El tiempo de ejecución del algoritmo es $\leq C(1+|w|)^k$ para ciertos $C>0$
+y $k\geq 1$.
+\end{itemize}
+\item Se puede implementar la función \texttt{pertenece\_a\_L(w)} con un algoritmo
+probabilista, que toma un $w\in\Alf^*$ y devuelve un booleano, de modo que:
+\begin{itemize}
+\item Si devuelve \texttt{True}, entonces $w\in\Lan$.
+\item Si devuelve \texttt{False}, entonces $w\not\in\Lan$.
+\item El tiempo de ejecución del algoritmo es una variable aleatoria con esperanza
+$\leq C(1+|w|)^k$ para ciertos $C>0$ y $k\geq 1$.
+\end{itemize}
+\end{enumerate}
+\end{prob}
+
+\begin{defi}
+Una algoritmo probabilista como el del apartado 2 o el 3 del problema~\ref{prob-vegas}
+se dice de tipo Las Vegas. Estos algoritmos siempre dicen la verdad.
+\end{defi}
+
+\begin{defi}\label{def-BPP}
+Un lenguaje $\Lan\subseteq\Alf^*$ se dice de tipo ${\rm BPP}$ si es posible implementar
+la función \texttt{es\_certificado\_valido\_L(w,c)} con un algoritmo determinista, que
+toma $w,c\in\Alf^*$ y devuelve un booleano, tal que existen $C_1,C_2>0$ y $k_1,k_2\geq 1$, de modo que:
+\begin{itemize}
+\item Si $w\in\Lan$, devuelve \texttt{True} para al menos $2/3$ de los $c\in\Alf^*$
+de longitud $\leq C_1(1+|w|)^{k_1}$.
+\item Si $w\not\in\Lan$, devuelve \texttt{False} para al menos $2/3$ de los
+$c\in\Alf^*$ de longitud $\leq C_1(1+|w|)^{k_1}$.
+\item El tiempo de ejecución es $\leq C_2(1+|w|)^{k_2}$.
+\end{itemize}
+\end{defi}
+
+\bigskip
+
+Si interpretamos al certificado suciento $c$ como una cadena aleatoria, llegamos a
+la siguiente definición equivalente de la clase ${\rm BPP}$:
+
+\begin{defi}\label{def-BPP2}
+Sea $\Lan\subseteq\Alf^*$ un lenguaje. Se dice que $\Lan$ es de tipo ${\rm BPP}$
+si es posible implementar la función \texttt{pertenece\_a\_L(w)} con un algoritmo
+probabilista, que toma $w\in\Alf^*$ y devuelve un booleano, de modo que:
+\begin{enumerate}
+\item ${\rm prob}({\rm devuelve}\;\texttt{True}\,|\,w\in\Lan)\geq\frac23$.
+\item ${\rm prob}({\rm devuelve}\;\texttt{False}\,|\,w\not\in\Lan)\geq\frac23$.
+\item El tiempo de ejecución es $\leq C(1+|w|)^k$ para ciertos $C>0$ y $k\geq 1$.
+\end{enumerate}
+\end{defi}
+
+\bigskip
+
+Tal como hicimos antes, eligiendo $c_1,c_2,\ldots,c_r$ al azar de longitud
+$\leq C_1(1+|w|)^k$, y adoptando la decisión de la mayoría de 
+\texttt{es\_certificado\_valido\_L(w,c\_i)}, obtenemos un algoritmo probabilista
+para la pertenencia a $\Lan$ con una probabilidad de error tan pequeña como
+necesitemos.
+
+\bigskip
+
+\begin{prob}
+Demostrar que la definiciones \ref{def-BPP} y \ref{def-BPP2} son equivalentes y que
+en cualquiera de ellas es posible reemplazar el $2/3$ por cualquier $\varepsilon
+\in(1/2,1)$.
+\end{prob}
+
+Un algoritmo probabilista como el de la definición~\ref{def-BPP2} no siempre devuelve
+la verdad, pero la probabilidad de error puede reducirse tanto como se quiera. El
+tiempo de ejecución de estos algoritmos es siempre polinomial en $|w|$. Estos algoritmos
+de dicen de tipo Montecarlo.
+
+\begin{prob}\label{prob-xx}
+Sea $\Lan\subseteq{\bf Nat^4}$ el lenguaje de las $4$-tuplas $(a,b,n,c)$ tales que
+$x^2+ax+b\equiv0\pmod{n}$ tiene solución $x\in[0,c]$. Demostrar que si $\Lan\in{\rm BPP}$,
+entonces $\Lan\in{\rm RP}$.
+
+{\bf Hint:} Utilizar el método de la bisección en la variable $c$.
+\end{prob}
+
+\end{document}

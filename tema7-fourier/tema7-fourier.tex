@@ -1,0 +1,530 @@
+\documentclass[a4paper, 11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=2cm]{geometry}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{lightgrey}{rgb}{0.95,0.95,0.95}
+
+\renewcommand*{\lstlistingname}{Programa}
+
+\lstset{
+   language=Python,
+   basicstyle=\ttfamily\small,
+   keywordstyle=\color{deepblue}\bfseries\itshape,
+   commentstyle=\color{deepgreen}\itshape,
+   stringstyle=\color{deepred},
+   backgroundcolor=\color{lightgrey},
+   morekeywords={as,assert,nonlocal,with,yield},
+   showstringspaces=false,
+   numbers=left,
+   rulecolor=\color{black},
+   captionpos=b,
+   frame=leftline,
+   literate=
+   {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+   {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+   {à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+   {À}{{\`A}}1 {È}{{\`E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+   {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+   {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+   {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+   {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+   {ã}{{\~a}}1 {ẽ}{{\~e}}1 {ĩ}{{\~i}}1 {õ}{{\~o}}1 {ũ}{{\~u}}1
+   {Ã}{{\~A}}1 {Ẽ}{{\~E}}1 {Ĩ}{{\~I}}1 {Õ}{{\~O}}1 {Ũ}{{\~U}}1
+   {œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+   {ű}{{\H{u}}}1 {Ű}{{\H{U}}}1 {ő}{{\H{o}}}1 {Ő}{{\H{O}}}1
+   {ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {Ø}{{\O}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+   {€}{{\euro}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
+   {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1 {¡}{{!`}}1 
+}
+
+\newcommand{\Alf}{\mathcal{A}}
+\newcommand{\Lan}{\mathcal{L}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\UU}{\mathcal{U}}
+
+\newcounter{numerodetema}
+\newcommand\tema[1]{{\eject\stepcounter{numerodetema}\bf Álgebra Computacional
+2023/24 \hfill Tema~\#\arabic{numerodetema}}\par\smallskip\hrule\bigskip\par
+\begin{center}{\Large\bf #1}\end{center}}
+
+\theoremstyle{plain}
+\newtheorem{teor}{Teorema}[numerodetema]
+\newtheorem{coro}[teor]{Corolario}
+\newtheorem{lema}[teor]{Lema}
+\newtheorem{prop}[teor]{Proposición}
+\theoremstyle{definition}
+\newtheorem{defi}[teor]{Definición}
+\newtheorem{prob}{Problema}[numerodetema]
+
+\newcommand\myatop[2]{\genfrac{}{}{0pt}{}{#1}{#2}}
+
+\parindent=0cm
+
+\begin{document}
+
+\setcounter{numerodetema}{6}
+\tema{La tranformada discreta de Fourier}
+
+La transformada discreta de Fourier (clásica) es la aplicación
+\[
+\begin{aligned}
+   DFT_n:\CC[x]_{<n} &\longrightarrow \CC^n \\
+   p(x) & \mapsto \left(p(1),p(\xi_n),p(\xi_n^2),\ldots,p(\xi_n^{n-1})\right)
+\end{aligned}
+\]
+donde $\CC[x]_{<n}$ es el conjunto de polinomios en $\CC[x]$ de grado menor
+que $n$ y $\xi_n\in\CC$ es una raíz $n$-ésima primitiva de la unidad, es
+decir, $\xi_n^n=1$ pero $\xi_n^i\neq 1$ para $i=1,\ldots,n-1$.
+Es inmediato que $DFT_n$ es un morfismo de $\CC$-espacios vectoriales.
+Si representamos a los elementos de $\CC[x]_{<n}$ en la base
+$\{1,x,x^2,\ldots,x^{n-1}\}$ y a los de $\CC^n$ en la base canónica,
+la matriz de $DFT_n$ es
+\[
+D(\xi_n)=
+\left[
+\begin{array}{ccccc}
+1 & 1 & 1 & \cdots & 1 \\
+1 & \xi_n & \xi_n^2 & \cdots & \xi_n^{n-1} \\
+1 & \xi_n^2 & \xi_n^4 & \cdots & \xi_n^{2(n-1)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & \xi_n^{n-1} & \xi_n^{2(n-1)} & \cdots & \xi_n^{(n-1)^2}
+\end{array}
+\right]\in\CC^{n\times n}.
+\]
+Esta matriz es simétrica y de tipo Vandermonde.
+
+\bigskip
+
+La transformada discreta de Fourier es un monomorfismo, ya que un polinomio
+de grado menor que $n$ está determinado por su evaluación en $n$ puntos
+distintos. Como además $\CC[x]_{<n}$ y $\CC^n$ son $\CC$-espacios vectoriales
+de la misma dimensión, $DFT_n$ es también un isomorfismo. La inversa de
+$DFT_n$, que se denota $IDFT_n:\CC^n\longrightarrow\CC[x]_{<n}$,
+corresponde con la interpolación de polinomios.
+
+\begin{teor}\label{teor-dft}
+La matriz inversa de $D(\xi_n)$ es $\frac1nD(\xi_n^{-1})$.
+\end{teor}
+\begin{proof}
+En lo que sigue utilizaremos índices $0,1,\ldots,n-1$ para indicar las filas y
+columnas de matrices de $n\times n$.
+\[
+ (D(\xi_n)D(\xi_n^{-1}))_{i,j}=\sum_{k=0}^{n-1}D(\xi_n)_{i,k}D(\xi_n^{-1})_{k,j}=
+ \sum_{k=0}^{n-1}\xi_n^{ik}\xi_n^{-kj}=
+ 1+\xi_n^{i-j}+\xi_n^{2(i-j)}+\cdots+\xi_n^{(n-1)(i-j)}
+\]
+Es claro que si $i=j$, los $n$ sumandos son todos $1$ y por lo tanto
+$(D(\xi_n)D(\xi_n^{-1}))_{i,i}=n$. Si $i\neq j$, tenemos la suma
+de una progresión geométrica de razón $\xi_n^{i-j}$, y entonces
+$(D(\xi_n)D(\xi_n^{-1}))_{i,j}=\frac{1-\xi_n^{n(i-j)}}{1-\xi_n^{i-j}}=0$,
+ya que $\xi_n^n=1$ y $\xi_n^{i-j}\neq 1$.
+Combinando ambos resultados, obtenemos que $D(\xi_n)D(\xi_n^{-1})=
+n\cdot {\rm I}_{n\times n}$ y por lo tanto $D(\xi_n)$ es invertible y su
+inversa es $\frac1nD(\xi_n^{-1})$.
+\end{proof}
+
+Es claro que los $\CC$-espacios vectoriales $\CC[x]_{<n}$ y
+$\CC[x]/\langle x^n-1\rangle$ son isomorfos, ya que en toda clase de
+equivalencia módulo $x^n-1$ hay un único representante de grado menor
+que $n$. Es habitual considerar la transformada discreta de Fourier
+como la aplicación
+\[
+\begin{aligned}
+   \overline{DFT}_n:\CC[x]/\langle x^n-1\rangle & \longrightarrow \CC^n \\
+   [p(x)] & \mapsto \left(p(1),p(\xi_n),\ldots,p(\xi_n^{n-1})\right)
+\end{aligned}
+\]
+que está bien definida, ya que el polinomio $x^n-1$ se anula en todos
+los $\xi_n^i$ con $i=0,\ldots,n-1$. La ventaja de esta formulación es
+que $\overline{DFT}_n$ es un morfismo de anillos.
+
+\bigskip
+
+El resultado más importante desde el punto de vista computacional es el
+método de Cooley-Tuckey para calcular $DFT_n(p(x))$ haciendo $O(n\log(n))$
+operaciones en $\CC$ en el caso en que $n$ es una potencia de $2$. A este
+algoritmo se lo llama la \emph{transformada rápida de Fourier}.
+
+\bigskip
+
+Digamos que $n=2^k$ para un cierto $k\geq 0$. Nuestro objetivo es implementar
+la función \texttt{FFT(p,xi)} que toma una lista de números complejos
+\texttt{p=[p0,p1,p2,...]} de longitud \texttt{n=len(p)} y una raíz
+primitiva $n$-ésima \texttt{xi} y calcula la transformada de Fourier del
+polinomio $p_0+p_1x+\cdots+p_{n-1}x^{n-1}\in\CC[x]_{<n}$. La función
+devuelve una lista \texttt{[a0,a1,a2,...]} de números complejos de
+la misma longitud que \texttt{p}.
+
+\bigskip
+
+El truco de Cooley-Tuckey consiste en reescribir al polinomio $p(x)$
+separando los exponentes pares de los impares. Más precisamente,
+\begin{equation}\label{eq-x}
+   p(x) = p_{even}(x^2) + x\cdot p_{odd}(x^2)
+\end{equation}
+con $p_{even},p_{odd}\in\CC[x]_{<n/2}$. En el código, bastará con
+crear dos listas \texttt{p\_even} y \texttt{p\_odd} con las entradas de
+\texttt{p} de índice par e impar, respectivamente. Además, notamos
+que si $\xi\in\CC$ es una raíz $n$-ésima primitiva de la unidad,
+entonces $\xi^2$ es una raíz $(n/2)$-ésima primitiva de la unidad.
+Si calculamos recursivamente \texttt{a\_even = FFT(p\_even, xi**2)} y
+\texttt{a\_odd = FFT(p\_odd, xi**2)}, tendremos los valores de
+$p_{even}(\xi^{2i})$ y $p_{odd}(\xi^{2i})$ para
+$i=0,1,\ldots,\frac{n}2-1$. Para cualquier $i\geq\frac{n}2$, los
+valores de $p_{even}(\xi^{2i})$ y $p_{odd}(\xi^{2i})$ son los mismos
+que ya calculamos, es decir, $p_{even}(\xi^{2(i-n/2)})$ y
+$p_{odd}(\xi^{2(i-n/2)})$. Lo único que resta hacer es utilizar la
+ecuación~\eqref{eq-x} para obtener $p(\xi^i)$ para $i=0,1,\ldots,n-1$.
+Concretamente, para cada $i=0,1,\ldots,n/2-1$, hay que hacer
+\texttt{a[i] = a\_even[i] + xi**i * a\_odd[i]} y
+\texttt{a[i+n/2] = a\_even[i] - xi**i * a\_odd[i]} .
+
+\bigskip
+
+\lstinputlisting[language=Python,caption={fft1.py},label={fft}]{fft1.py}
+
+\bigskip
+
+La aplicación principal de $DFT_n$ en álgebra computacional
+es para calcular el producto de dos polinomios en $\CC[x]$. Supongamos
+que $f,g\in\CC[x]$ satisfacen $\deg(f)+\deg(g)<n$. Entonces,
+\[
+   fg = IDFT_n\left(
+      DFT_n(f)\cdot DFT_n(g)
+   \right),
+\]
+donde el producto en $\CC^n$ se hace coordenada a coordenada. Esto
+funciona bien, ya que $\overline{DFT}_n$ y $\overline{IDFT}_n$ son
+morfismos de anillos y $\deg(fg)<n$. Por supuesto, el cálculo se
+hace eligiendo $n$ una potencia de $2$ mayor que $\deg(f)+\deg(g)$
+y utilizando la transformada rápida de Fourier. Esto muestra que
+es posible multiplicar dos polinomios en $\CC[x]$ en $O(n\log n)$
+operaciones en $\CC$, donde $n=\deg(f)+\deg(g)$.
+
+\begin{prob}
+Definimos $\widehat{DFT}_n:\CC^n\to\CC^n$ interpretando a los vectores de $\CC^n$
+como polinomios en $\CC[x]_{<n}$, es decir,
+$\widehat{DFT}_n(v)=DFT_n(v_0+v_1x+\cdots+v_{n-1}x^{n-1})$.
+Sean $v,w\in\CC^n$. Definimos la convolución $v\ast w$ como el vector de
+longitud $n$ dado por $(v\ast w)_i = \sum_{j=0}^{n-1}v_jw_{i-j}$, donde
+los índices se entienden módulo $n$. Demostrar que
+\[v\ast w = \widehat{IDFT}_n(\widehat{DFT}_n(v)\cdot \widehat{DFT}_n(w)),\]
+donde el $\cdot$ representa el producto coordenada a coordenada.
+\end{prob}
+
+\begin{prob}
+Sean $v,w\in\CC^n$. Definimos la negaconvolución $v\,\bar{*}\,w\in\CC^n$ mediante
+\[(v\,\bar{\ast}\,w)_i=\sum_{j+k=i}v_jw_k-\sum_{j+k=i+n}v_jw_k.\] En otras palabras,
+si se interpretan a los vectores de $\CC^n$ como elementos
+$[v],[w]\in\CC[x]/\langle x^n+1\rangle$, la negaconvolución corresponde
+con el producto $[v][w]$ en $A$. Sea $\xi_{2n}\in\CC$ una raíz $2n$-ésima
+de la unidad y sea $a=(1,\xi_{2n},\xi_{2n}^2,\ldots,\xi_{2n}^{n-1})\in\CC^n$.
+Demostrar que
+\[
+   v\,\bar{\ast}\,w=a^{-1}\cdot \widehat{IDFT}_n(\widehat{DFT}_n(a\cdot v)
+   \cdot \widehat{DFT}_n(a\cdot w)),
+\]
+donde el $\cdot$ representa el producto coordenada a coordenada.
+\end{prob}
+
+\begin{prob}
+Desarrollar un método recursivo (similar al de Cooley-Tuckey) para calcular
+$DFT_n$ para $n=3^k$, separando al polinomio en tres bloques en lugar de dos.
+\end{prob}
+
+Sea $A$ un anillo conmutativo y sea $\xi_n\in A$ una raíz $n$-ésima
+de la unidad tal que $\sum_{k=0}^{n-1}\xi_n^{ik}=0$ para $i=1,\ldots,n-1$.
+A un $\xi_n$ que cumple esa condición se lo llama raíz $n$-ésima
+primitiva de la unidad. En un dominio íntegro, basta con comprobar
+que $\xi_n^i\neq 1$ para $i=1,\ldots,n-1$, es decir, que el orden
+multiplicativo de $\xi_n$ es $n$. Lamentablemente, eso no es suficiente
+para anillos conmutativos en general.
+
+\bigskip
+
+{\bf Cuidado}: la noción de raíz primitiva de $\ZZ/p^k\ZZ$ que
+vimos durante en el tema~\#4
+no coincide exactamente con la de raíz $n$-ésima primitiva de
+la unidad en $\ZZ/p^k\ZZ$, aunque están muy relacionadas.
+
+\bigskip
+
+Supongamos además que el entero $n$, considerado como el elemento $n\cdot 1_A$
+de $A$, es invertible. Entonces todos los resultados de arriba, incluyendo
+el algoritmo de Cooley-Tuckey funcionan en $A$.
+
+\begin{prob}
+Sea $N=p_1^{n_1}p_2^{n_2}\cdots p_k^{n_k}\geq 2$ impar, con los $p_i$
+primos distintos y $n_i\geq 1$.
+\begin{itemize}
+\item Demostrar que $a\in\ZZ/N\ZZ$ es una raíz $n$-ésima primitiva de
+la unidad si y solo si $a^{n}\equiv1\pmod{N}$ y $\gcd(a^m-1,N)=1$ para
+$m=1,\ldots,n-1$.
+\item Demostrar que una condición necesaria y suficiente para la
+existencia de raíces $n$-ésimas primitivas de la unidad en $\ZZ/N\ZZ$
+es que $n\mid \gcd(p_1-1,p_2-1,\ldots,p_k-1)$.
+\end{itemize}
+\end{prob}
+
+\begin{prob}
+Sea $A=\ZZ/p\ZZ$ con $p=3\cdot 2^{189}+1$ el primo del problema~4.12.
+Encontrar un elemento $\xi\in A$ de orden multiplicativo $2^{20}$ y usarlo
+para implementar una función para multiplicar polinomios $f,g\in A[x]$ de
+grados menores que $500000$. Discutir como utilizar esa función para
+multiplicar polinomios en $\ZZ[x]$ si se sabe que sus coeficientes
+están en $[-2^{84},2^{84}]$.
+\end{prob}
+
+\begin{prob}
+Sea $R$ un dominio íntegro (en el que $2\cdot 1_R\neq 0_R$).
+Sean $n,m\geq 1$ enteros y sea $u$ una variable.
+\begin{itemize}
+\item Demostrar que
+\[
+\begin{aligned}
+   \gcd(u^n-1,u^m-1) &=u^{\gcd(n,m)}-1 \\
+   \gcd(u^n+1,u^m-1) &=\frac{u^{\gcd(2n,m)}-1}{u^{\gcd(n,m)}-1}
+\end{aligned}
+\]
+en el anillo de polinomios $R[u]$.
+%\item Demostrar que $[u]\in R[u]/\langle u^n-1\rangle$ es una
+%raíz $n$-ésima primitiva de la unidad si y sólo si $n$ es primo.
+\item Demostrar que $[u]\in R[u]/\langle u^n+1\rangle$ es una
+raíz $2n$-ésima primitiva de la unidad si y sólo si $n$ es una
+potencia de $2$.
+\item Demostrar que si $n$ es primo, entonces $[2]\in\ZZ/(2^n-1)\ZZ$ es
+una raíz $n$-ésima primitiva. ¿Sigue siendo esto válido si se cambian los $2$
+por $3$?
+\item Demostrar que si $n$ es una potencia de $2$, entonces
+$[2]\in\ZZ/(2^n+1)\ZZ$ es una raíz $2n$-ésima primitiva de la unidad.
+¿Sigue siendo esto válido si se cambian los $2$ por $3$?
+\end{itemize}
+\end{prob}
+
+Ahora veremos el método de Schönhage-Strassen para multiplicar
+polinomios en $R[x]$. Este método toma un entero $n=2^k\geq 1$ y dos
+polinomios $f,g\in R[x]$ de grado menor que $n$ y y calcula $[f]\cdot[g]$
+en $R[x]/\langle x^n+1\rangle$, es decir, obtiene un polinomio
+$h\in R[x]$ tal que $h\equiv fg\pmod{x^n+1}$ y $\deg(h)<n$.
+En el caso de que $\deg(f)+\deg(g)<n$, entonces $h=fg$ en $R[x]$, es
+decir, el método de Schönhage-Strassen puede utilizarse para multiplicar
+polinomios como caso particular.
+
+\bigskip
+
+Sean $n_1=2^{k_1}\geq1$ y $n_2=2^{k_2}\geq1$ tales que $n=n_1n_2$ y
+$2n_1\geq n_2$, es decir, $k_1+k_2=k$ y $1+k_1\geq k_2$. Tomamos a los
+polinomios $f$ y $g$ y los reescribimos del siguiente
+modo
+\[
+\begin{aligned}
+  f &= f_0(x) + f_1(x)x^{n_1}+ f_2(x)x^{2n_1}+\cdots +f_{n_2-1}(x)x^{(n_2-1)n_1}, \\
+  g &= g_0(x) + g_1(x)x^{n_1}+ g_2(x)x^{2n_1}+\cdots +g_{n_2-1}(x)x^{(n_2-1)n_1},
+\end{aligned}
+\]
+donde $\deg(f_i),\deg(g_i)<n_1$ para todo $i=0,1,\ldots,n_2-1$.
+Sea $A=R[u]/\langle u^{2n_1}+1\rangle$. Definimos los polinomios $\tilde{f},
+\tilde{g}\in A[y]$ del siguiente modo
+\[
+\begin{aligned}
+  \tilde{f} &= [f_0(u)]+[f_1(u)]y+[f_2(u)]y^2+\cdots+[f_{n_2-1}(u)]y^{n_2-1}, \\
+  \tilde{g} &= [g_0(u)]+[g_1(u)]y+[g_2(u)]y^2+\cdots+[g_{n_2-1}(u)]y^{n_2-1}.
+\end{aligned}
+\]
+Calculamos el $\tilde{h}=\tilde{f}\tilde{g}\bmod{y^{n_2}+1}$, haciendo
+una negaconvolución con $\xi_{2n_2}=[u^{2n_1/n_2}]$. Esto es posible, ya
+que $[u]$ es una raíz $4n_1$-ésima primitiva de la unidad de $A$ y por
+lo tanto $[u^{2n_1/n_2}]$ es una raíz $2n_2$-ésima primitiva de la unidad.
+Esto requiere $O(n_2\log(n_2))$ operaciones de suma, resta y multiplicación
+por potencias de $[u]$ en $A$, cada una de las cuales tiene una complejidad
+aritmética $O(n_1)$ en $R$. Además se necesitan hacer $n_2$ productos en
+$A$, para lo que habrá que invocar al método recursivamente.
+Finalmente, hay que reconstruir el resultado final en $R[x]$ teniendo
+\begin{equation}\label{zzz}
+   \tilde{h}=\tilde{f}\tilde{g}\bmod{y^{n_2}+1}
+   =[h_0(u)]+[h_1(u)]y+[h_2(u)]y^2+\cdots+[h_{n_2-1}(u)]y^{n_2-1}
+\end{equation}
+con los $\deg(h_i)<2n_1$ para $i=0,1,\ldots,n_2-1$.
+Afirmamos que será
+\begin{equation}\label{yyy}
+   h=fg\bmod{x^n+1}=
+   h_0(x)+h_1(x)x^{n_1}+h_2(x)x^{2n_1}+\cdots+h_{n_2-1}(x)x^{(n_2-1)n_1}
+     \bmod{x^n+1}
+\end{equation}
+y que para hacer esto sólo se necesitan hacer $n$ sumas y restas en $R$.
+En total, el método requiere
+\begin{equation}\label{recSS}
+  {\rm MultSS}(n)\leq Cn\log(n_2)+n_2\,{\rm MultSS}(2n_1)
+\end{equation}
+operaciones aritméticas en $R$, para una cierta constante $C>0$.
+
+\bigskip
+
+Cuando $k$ es par, podemos tomar $k_1=k_2=\frac{k}2$, y en caso contrario,
+es decir, cuando $k$ es impar, $k_1=\frac{k-1}{2}$ y $k_2=\frac{k+1}{2}$.
+Haciendo esto, y resolviendo la recursión~\eqref{recSS} nos queda que
+\begin{equation}\label{xxx}
+{\rm MultSS}(n)\leq Dn\log(n)\log(\log(n))
+\end{equation}
+para una cierta constante $D>0$. En efecto, suponiendo que ya tuvieramos
+la desigualdad~\eqref{xxx} demostrada para los valores menores que $n$,
+podemos usar~\eqref{recSS} y nos queda
+\[
+\begin{aligned}
+ {\rm MultSS}(n) &\leq Cn\log(n_2)+n_2D2n_1\log(2n_1)\log(\log(2n_1))\\
+ &\leq Cn\log(\sqrt{2n})+2Dn\log(2\sqrt{n})\log(\log(2\sqrt{n})) \\
+ &= \frac{C}{2}n\log(n)+\frac{C}2n +Dn\log(n)\log\left(\frac12\log(n)\right) + Dn\log\left(\frac12\log(n)\right)\\
+ &= Dn\log(n)\log(\log(n)) - \left(D-\frac{C}2\right)n - \left(D-\frac{C}{2}\right)n\log(n) + Dn\log(\log(n))\\
+ &\leq Dn\log(n)\log(\log(n))
+\end{aligned}
+\]
+para $n$ suficientemente grande (suponiendo que $D>C/2$).
+
+\bigskip
+
+Solo resta probar que la fórmula~\eqref{yyy} es correcta. Para eso, partimos
+de la ecuación~\eqref{zzz} que nos dice que
+\[
+   [h_i(u)] = \sum_{j+k=i}[f_j(u)][g_k(u)] - \sum_{j+k=i+n_2}[f_j(u)][g_k(u)]
+\]
+para todo $i=0,1,\ldots,n_2-1$.
+Como $\deg(f_j),\deg(g_k)<n_2$ y estamos tomando clases módulo $u^{2n_2}+1$,
+resulta que
+\[
+   h_i(u) = \sum_{j+k=i}f_j(u)g_k(u) - \sum_{j+k=i+n_2}f_j(u)g_k(u)
+\]
+para todo $i=0,1,\ldots,n_2-1$. Por lo tanto,
+\[
+\begin{aligned}
+  \sum_{i=0}^{n_2-1}h_i(x)x^{in_1}
+  &=  \sum_{0\leq j+k<n_2}f_j(x)g_k(x)x^{(j+k)n_1}
+    -\sum_{n_2\leq j+k<2n_2}f_j(x)g_k(x)x^{(j+k-n_2)n_1}\\
+  &\equiv \sum_{0\leq j+k<2n_2} f_j(x)g_k(x)x^{(j+k)n_1}
+  \equiv fg\equiv h\pmod{x^n+1}.
+\end{aligned}
+\]
+Eso concluye la demostración de la correctitud del método.
+
+\bigskip
+
+Una de las principales ventajas del método de Schönhage-Strassen para
+multiplicar polinomios en $R[x]$ es que no se necesita que $R$ tenga
+raíces de la unidad. El precio que se paga, comparado con la multiplicación
+en $\CC[x]$ usando transformadas de Fourier, es un factor $\log(\log(n))$ en
+la complejidad. Por otra parte, el cálculo que hicimos sobre la complejidad
+sólo tiene en cuenta la cantidad de operaciones aritméticas en $R$ y no el
+tamaño de sus operandos. Esto lo hace ideal para trabajar en anillos $R$
+en los que el tamaño de sus elementos sea constante (los cuerpos finitos).
+
+\begin{prob}
+Implementar la función \texttt{mult\_pol\_mod(f,g,p)} que tome un primo $p\neq2$
+y dos polinomios $f,g\in(\ZZ/p\ZZ)[x]$, representados por la lista de sus
+coeficientes, y que calcule su producto. Para esto, implementar una función
+recursiva \texttt{mult\_ss\_mod(f,g,k,p)} que tome $[f],[g]\in(\ZZ/p\ZZ)[x]/
+\langle x^{2^k}+1\rangle$ y calcule su producto aplicando el método de
+Schönhage-Strassen.
+\end{prob}
+
+La misma idea que vimos para multiplicar polinomios en $R[x]$ puede usarse
+para multiplicar enteros. Se puede probar que es posible calcular productos
+en $\ZZ/\langle 2^n+1\rangle$ con $n=2^k$ en $O(n\log(n)\log(\log(n)))$
+operaciones binarias. Sólo hay que tener cuidado de tomar
+$A=\ZZ/\langle 2^{2n_1+\log(n_2)}+1\rangle$ para que la
+demostración \eqref{zzz}$\Rightarrow$\eqref{yyy} funcione bien. Haciendo
+esto queda una recursión similar a~\eqref{recSS},
+\[
+  {\rm MultSS}_{\ZZ}(n)\leq Cn\log(n_2)
+  +n_2\,{\rm MultSS}_{\ZZ}(2n_1+\log(n_2))
+\]
+pero su solución sigue siendo de tipo $O(n\log(n)\log(\log(n)))$.
+
+\begin{prob}
+Sean $a,b\in[0,2^{2^{20}}]$ enteros. Mostrar como el método de Schönhage-Strassen
+reduce el problema de calcular $ab$ a hacer $2^{10}$ productos de enteros en
+$[0,2^{2^{10}+10}]$. Implementar la función \texttt{mult\_enteros\_ss\_20(a,b)}
+que aplique ese procedimiento. Esta función NO debe ser recursiva e internamente
+sólo puede usar el operador de multiplicación $2^{10}$ veces y con enteros en
+el rango $[0,2^{1034}]$. Todas las demás operaciones deben ser \texttt{+},
+\texttt{-}, \texttt{<<} y \texttt{>>}.
+\end{prob}
+
+El método de Cooley-Tuckey para calcular $DFT_n$ con $n=2^k$ puede interpretarse
+como el producto de matrices
+\[
+  D(\xi_n) = \left[\begin{array}{cc}I & I \\ I & -I\end{array}\right]\cdot
+  \left[\begin{array}{cc}I & 0 \\ 0 & E(\xi_n)\end{array}\right]\cdot
+  \left[\begin{array}{cc}D(\xi_{n/2}) & 0 \\ 0 & D(\xi_{n/2})\end{array}\right]\cdot
+  P_n
+\]
+donde $P_n$ es la matriz de permutación que manda los índices pares $0,2,4,\ldots$
+en $0,1,2,\ldots$ y los impares $1,3,5,\ldots$ en $\frac{n}2,\frac{n}2+1,\ldots$ y
+$E(\xi_n)$ es la matriz diagonal de las primeras $\frac{n}2$ potencias de $\xi_n$.
+Dado que la matriz $D(\xi_n)$ es simétrica, también tenemos que
+\[
+D(\xi_n) = P_n^{-1}\cdot
+\left[\begin{array}{cc}D(\xi_{n/2}) & 0 \\ 0 & D(\xi_{n/2})\end{array}\right]\cdot
+\left[\begin{array}{cc}I & 0 \\ 0 & E(\xi_n)\end{array}\right]\cdot
+\left[\begin{array}{cc}I & I \\ I & -I\end{array}\right].
+\]
+Aplicando esta fórmula recursivamente, nos queda
+\begin{equation}\label{www}
+\begin{aligned}
+  D(\xi_n) &= P_n^{-1}\cdot
+  \left[\begin{array}{cc}P_{n/2}^{-1} & 0 \\ 0 & P_{n/2}^{-1}\end{array}\right]\cdot
+  \left[\begin{array}{cccc}D(\xi_{n/4}) & 0 & 0 & 0 \\ 0 & D(\xi_{n/4}) & 0 & 0 \\
+  0 & 0 & D(\xi_{n/4}) & 0 \\ 0 & 0 & 0 & D(\xi_{n/4})\end{array}\right]\cdot \\
+  &\cdot
+  \left[\begin{array}{cccc}I & 0 & 0 & 0 \\ 0 & E(\xi_{n/2}) & 0 & 0 \\
+  0 & 0 & I & 0 \\ 0 & 0 & 0 & E(\xi_{n/2})\end{array}\right]\cdot
+  \left[\begin{array}{cccc}I & I & 0 & 0 \\ I & -I & 0 & 0 \\
+  0 & 0 & I & I \\ 0 & 0 & I & -I\end{array}\right]\cdot
+  \left[\begin{array}{cc}I & 0 \\ 0 & E(\xi_n)\end{array}\right]\cdot
+  \left[\begin{array}{cc}I & I \\ I & -I\end{array}\right]
+\end{aligned}
+\end{equation}
+y así podríamos continuar $k$ veces hasta que quede una diagonal de $D(\xi_1)$,
+es decir, la matriz identidad.
+
+\bigskip
+
+Esa fórmula para $D(\xi_n)$ permite implementar una versión iterativa
+de la transformada rápida de Fourier que opera ``in-place''.
+
+\bigskip
+
+\lstinputlisting[language=Python,caption={fft2.py},label={fft-in-place}]{fft2.py}
+
+\bigskip
+
+Por supuesto, las funciones \texttt{fft\_in\_place(p, xi)} y
+\texttt{ifft\_in\_place(p, xi)} no  devuelven ningún resultado, ya que
+modifican a las propias entradas de la lista \texttt{p}. Es importante
+notar que estas funciones producen la transforma de Fourier \emph{desordenada}.
+El código no aplica ninguna de las permutaciones que aparecen en la
+fórmula~\eqref{www}.
+
+\begin{prob}
+Demostrar que la entrada $i$-ésima del resultado de aplicar 
+\texttt{fft\_in\_place(p, xi)} es la coordenada $\sigma(i)$-ésima de $DFT_n(p)$,
+donde $\sigma(i)$ es el número cuya representación binaria es la de $i$
+escrita al revés.
+\end{prob}
+
+% FFT para n = n1 * n2
+% FFT para n cualquiera
+% Interpretación física de la DFT
+
+\end{document}
