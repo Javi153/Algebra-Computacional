@@ -52,6 +52,8 @@ def producto_por_rotaciones(f: list[list], rot: int, p: int): #Dado un polinomio
 
 #Funcion para multiplicar polinomios sin que haya problema de "overflow" del grado
 def mult_pol_mod(f: list, g: list, p: int) -> list:
+    if not f or not g: #Si alguno de los polinomios es el nulo devolvemos a su vez el polinomoi nulo
+        return []
     k = 0
     while (1 << k) < len(f) + len(g) - 1: #Calculamos el grado maximo que puede tener el polinomio resultante
         k += 1
