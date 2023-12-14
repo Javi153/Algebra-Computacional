@@ -20,13 +20,11 @@ def fft(p, rot, q):
     return a
 
 # esta función calcula la transformada inversa
-def ifft(a, rot, k2, q):
+def ifft(a, rot, q):
     n = len(a)
     p = fft(a, -rot, q) #Al igual que en el algoritmo original, usamos la raiz inversa. En este caso corresponde a una rotacion en sentido contrario
-    for i in range(n): #En este caso nuestro n sera de la forma 2 ** k2. Por tanto, 1/n en el cuerpo finito será otra cierta potencia de 2, 2 ** s.
-                        #Sabiendo que 2 ** (q-1) == 1 mod q y que el orden de 2 es k2+s, entonces (q-1) = (k2+s) + l*(k2+s).
-                        #Se tiene entonces que 2 ** (q - 1 - k2) == 2 ** (s + l * (k2 + s)) == 2 ** s mod q. Por tanto es equivalente a multiplicar por el inverso.
-        p[i] = [(p[i][j] * (1 << (q - 1 - k2))) % q for j in range(len(p[i]))]
+    for i in range(n): #Multiplicamos por el inverso modular de n
+        p[i] = [(p[i][j] * pow(n, -1, q)) % q for j in range(len(p[i]))]
     return p
 
 #Funcion para realizar la rotacion de listas que sustituye a la multiplicacion por raices de la unidad, pues en este caso las raices de la unidad son potencias de u
@@ -92,7 +90,7 @@ def mult_ss_mod(f: list, g: list, k: int, p:int) -> list:
     h_gorro = [0] * n2
     for i in range(n2): #Para cada componente de tamaño 2 * n1 realizamos la multiplicacion recursivamente
         h_gorro[i] = mult_ss_mod(f_gorro[i], g_gorro[i], k1+1, p)
-    h_gorro = producto_por_rotaciones(ifft(h_gorro, 2 * rot, k2, p), -rot, p) #Finalmente realizamos la transformacion inversa y multiplicamos por las raices
+    h_gorro = producto_por_rotaciones(ifft(h_gorro, 2 * rot, p), -rot, p) #Finalmente realizamos la transformacion inversa y multiplicamos por las raices
     res = [0] * n
     res[0: n1] = [(h_gorro[0][j] + (p-1)*h_gorro[n2-1][n1+j]) % p for j in range(n1)] #Calculamos los coeficientes resultantes aplicando modulo x ** 2 ** k + 1
     for i in range(1, n2):
